@@ -1,7 +1,7 @@
 package daelim.emergency_backend.models.AvailavleBedInfo
 
 data class AvailableBedInfo(
-    val mum:Int, //일련번호
+    val rmum:Int, //일련번호
     val hpid:String, //기관코드
     val phpid:String, //구 기관코드
     val hvidate:String, //입력일시
