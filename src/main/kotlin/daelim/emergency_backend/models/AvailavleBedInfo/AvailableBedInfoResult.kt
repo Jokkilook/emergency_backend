@@ -5,6 +5,42 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonRootName
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper
 import java.util.*
+// ** 데이터 클래스 Xml 파싱과 함께 정의하는 방법 **
+// 반환되는 Xml 구조에 따라 똑같은 구조로 데이터 클래스를 만들어줘야함
+//
+// <response>
+//   <header>
+//      <resultCode></resultCode>
+//      <resultMsg></resultMsg>
+//   </header>
+//   <body>
+//       <items>
+//           <item><item>
+//           <item><item>
+//           <item><item>
+//       </items>
+//       <numOfRows></numOfRows>
+//       <pageNo></pageNo>
+//       <totalCount></totalCount>
+//   </body>
+// <response>
+//
+// 위와 같은 형식으로 반환되기 때문에 일단 데이터를 구분 지을 수 있는 이름으로 클래스를 만들고, (ex. AvailableBedInfoResult)
+// @JsonRootName 어노테이션을 사용해 "response"를 명시해줌으로서 response 태그의 값을 받는 다는 것을 알려야 함.
+// @Set:JsonProperty 어노테이션으로 명시된 이름의 태그 값을 변수에 할당한다고 알려준다.
+// 대부분 위와 같은 형식이니 아래 정의된 클래스를 참고하여 다른 클래스도 변환하면 됨.
+// items 부분이 까다로우니 자세히 봐야함.
+// 이 데이터 클래스의 경우 response에 해당하는 AvailableBedInfoResult 클래스 안에
+// header와 body 태그 데이터를 담아줄 변수를 놓고,
+// header는 다시 header 클래스를 생성하여 태그 안의 내용인 resultCode, resultMsg 변수를 놨음.
+// 실질적인 내용이 들어가는 AvailableBedInfoResult 의 body 변수에는 다시 Body 클래스를 생성.
+// body 태그에는 item을 요소로 갖는 items 태그와, 기타 등등 3가지가 있음.
+// 기타 3가지는 그냥 태그 이름을 명시해주면 되지만, items 태그는 item이 여러개이기 때문에 다름.
+// 우선 요소인 item (응급의료정보) 클래스 (여기선 AvailableBedInfo)를 만들어준 후,
+// 오직 item(AvailableBedInfo)의 리스트를 변수로 하나 갖는 Items 클래스를 생성한다.
+// 그리고 Body 클래스의 items 변수의 자료형을 Items 클래스로 지정하고, @set:JsonProperty("items")를 해주면 된다.
+// 헷갈리면 이 데이터 클래스를 차근차근 살펴보는 걸 추천함.
+
 @JsonRootName("response")
 data class AvailableBedInfoResult(
 
