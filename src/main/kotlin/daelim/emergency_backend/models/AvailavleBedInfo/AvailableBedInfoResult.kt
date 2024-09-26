@@ -28,32 +28,44 @@ data class Body(
 
     @JacksonXmlElementWrapper(useWrapping = false, localName = "items")
     @set:JsonProperty("items")
-    var items:List<AvailableBedInfo>?
+    var items:Items?,
+    @set:JsonProperty("numOfRows")
+    var numOfRows:String?,
+    @set:JsonProperty("pageNo")
+    var pageNo:String?,
+    @set:JsonProperty("totalCount")
+    var totalCount:String?
+)
+
+@JsonRootName("items")
+data class Items(
+    @set:JsonProperty("item")
+    var item:List<AvailableBedInfo>?
 )
 
 @JsonRootName("item")
 data class AvailableBedInfo(
-    @set:JsonProperty("rmum") var rmum:Int?, //일련번호
+    @set:JsonProperty("rmum") var rmum:String?, //일련번호
     @set:JsonProperty("hpid") var hpid:String?, //기관코드
     @set:JsonProperty("phpid") var phpid:String?, //구 기관코드
     @set:JsonProperty("hvidate") var hvidate:String?, //입력일시
-    @set:JsonProperty("hvec") var hvec:Int?, //일반병상 수
-    @set:JsonProperty("hvoc") var hvoc:Int?, //수술실 병상 수
-    @set:JsonProperty("hvcc") var hvcc:Int?, //중환자실 신경과 병상 수
-    @set:JsonProperty("hvncc") var hvncc:Int?, //중환자실 신생아 병상 수
-    @set:JsonProperty("hvccc") var hvccc:Int?, //중환자실 흉부외과 병상 수
-    @set:JsonProperty("hvicc") var hvicc:Int?, //중환자실 일반 입원실 수
+    @set:JsonProperty("hvec") var hvec:String?, //일반병상 수
+    @set:JsonProperty("hvoc") var hvoc:String?, //수술실 병상 수
+    @set:JsonProperty("hvcc") var hvcc:String?, //중환자실 신경과 병상 수
+    @set:JsonProperty("hvncc") var hvncc:String?, //중환자실 신생아 병상 수
+    @set:JsonProperty("hvccc") var hvccc:String?, //중환자실 흉부외과 병상 수
+    @set:JsonProperty("hvicc") var hvicc:String?, //중환자실 일반 입원실 수
     @set:JsonProperty("hvdnm") var hvdnm:String?, //당직의 이름
-    @set:JsonProperty("hvctayn") var hvctayn:Boolean?, //CT 가용 여부
-    @set:JsonProperty("hvmriayn") var hvmriayn:Boolean?, //MRI 가용 여부
-    @set:JsonProperty("hvangioayn") var hvangioayn:Boolean?, //혈관촬영기 가용 여부
-    @set:JsonProperty("hvventiayn") var hvventiayn:Boolean?, //인공호흡기 가용 여부
-    @set:JsonProperty("hvventisoayn") var hvventisoayn:Boolean?, //인큐베이터 가용 여부
-    @set:JsonProperty("hvcrrtayn") var hvcrrtayn:Boolean?, //CRRT 가용 여부
-    @set:JsonProperty("hvecmoayn") var hvecmoayn:Boolean?, //ECMO 가용 여부
-    @set:JsonProperty("hvoxyayn") var hvoxyayn:Boolean?, //고압 산소 치료기 가용 여부
-    @set:JsonProperty("hvhypoayn") var hvhypoayn:Boolean?, //중심 체온 조절 유도기 가용 여부
-    @set:JsonProperty("hvamyn") var hvamyn:Boolean?, //구급차가용여부
+    @set:JsonProperty("hvctayn") var hvctayn:String?, //CT 가용 여부
+    @set:JsonProperty("hvmriayn") var hvmriayn:String?, //MRI 가용 여부
+    @set:JsonProperty("hvangioayn") var hvangioayn:String?, //혈관촬영기 가용 여부
+    @set:JsonProperty("hvventiayn") var hvventiayn:String?, //인공호흡기 가용 여부
+    @set:JsonProperty("hvventisoayn") var hvventisoayn:String?, //인큐베이터 가용 여부
+    @set:JsonProperty("hvcrrtayn") var hvcrrtayn:String?, //CRRT 가용 여부
+    @set:JsonProperty("hvecmoayn") var hvecmoayn:String?, //ECMO 가용 여부
+    @set:JsonProperty("hvoxyayn") var hvoxyayn:String?, //고압 산소 치료기 가용 여부
+    @set:JsonProperty("hvhypoayn") var hvhypoayn:String?, //중심 체온 조절 유도기 가용 여부
+    @set:JsonProperty("hvamyn") var hvamyn:String?, //구급차가용여부
     @set:JsonProperty("hv1") var hv1:String?, //응급실 당직의 직통 연락처
     @set:JsonProperty("hv2") var hv2:String?, //내과 중환자실 수
     @set:JsonProperty("hv3") var hv3:String?, //외과 중환자실 수
@@ -63,8 +75,8 @@ data class AvailableBedInfo(
     @set:JsonProperty("hv7") var hv7:String?, //약물중환자 수
     @set:JsonProperty("hv8") var hv8:String?, //화상 중환자실 수
     @set:JsonProperty("hv9") var hv9:String?, //외상 중환자실 수
-    @set:JsonProperty("hv10") var hv10:Boolean?, //소아 가능 여부
-    @set:JsonProperty("hv11") var hv11:Boolean?, //인큐베이터(보육기) 가용 여부@field:Element(name="")
+    @set:JsonProperty("hv10") var hv10:String?, //소아 가능 여부
+    @set:JsonProperty("hv11") var hv11:String?, //인큐베이터(보육기) 가용 여부@field:Element(name="")
     @set:JsonProperty("hv12") var hv12:String?, //솓아당직의 직통연락처
     @set:JsonProperty("hv13") var hv13:String?, //격리진료구역 음압격리병상 수
     @set:JsonProperty("hv14") var hv14:String?, //격리진료구역 일반격리병상 수

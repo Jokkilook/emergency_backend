@@ -11,21 +11,28 @@ import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.util.UriComponentsBuilder
 import reactor.core.publisher.Mono
+import java.net.URI
 
 @Service
 class TestService(val webClient: WebClient) {
 
     val serviceKey = "YXCUlt2omoo9wIHweuRa2AwH00oXWywq3Up%2F6DVims6C8XED7Xcyn4SR3WaU83G73CP3%2FupnkVWkJnbDvVa%2B%2Bg%3D%3D"
+    //val serviceKey = "YXCUlt2omoo9wIHweuRa2AwH00oXWywq3Up/6DVims6C8XED7Xcyn4SR3WaU83G73CP3/upnkVWkJnbDvVa++g=="
     fun getTest(url:String):Mono<AvailableBedInfoResult>{
 
-        return  webClient.get()
-            .uri(url)
-            .attribute("serviceKey",serviceKey)
+        val response = webClient.get()
+            .uri{
+                it.path(url)
+                .queryParam("serviceKey",serviceKey)
+                .build()
+            }
             .retrieve()
             .bodyToMono(String::class.java)
             .map { xmlString ->
                 print(xmlString)
                 convertXmlToAvailableBedInfoResult(xmlString) }
+
+        return  response
     }
 
     private fun convertXmlToAvailableBedInfoResult(xmlString: String): AvailableBedInfoResult {
