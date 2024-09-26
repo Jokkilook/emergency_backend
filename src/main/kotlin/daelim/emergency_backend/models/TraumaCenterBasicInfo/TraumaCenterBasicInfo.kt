@@ -52,7 +52,7 @@ data class TraumaCenterBasicInfo(
     val dgidldName: String, //진료과목
     val hpbdn: Int, //병상수
     val hpccuyn: Int, //흉부중환자실
-    val hpcuyns: Int, //신경중환자실
+    val hpcuyns: Int, //신경중환자실 ---변수명 잘못됨 수정해야 함---
     val hperyn: Int, //응급실
     val hpgryn: Int, //입원실
     val hpcuyn: Int, //입반중환자실
