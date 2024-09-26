@@ -1,17 +1,15 @@
 package daelim.emergency_backend.test
 
-import org.springframework.http.ResponseEntity
+import daelim.emergency_backend.models.AvailavleBedInfo.AvailableBedInfoResult
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
+import reactor.core.publisher.Mono
 
 @RestController
-class TestController {
+class TestController(val testService: TestService) {
 
     @GetMapping("/test")
-    fun Test():ResponseEntity<TestModel> {
-
-        val response:TestModel = TestModel(1,"TEST")
-
-        return ResponseEntity.ok().body(response)
+    fun test():Mono<AvailableBedInfoResult>{
+        return testService.getTest("/getEmrrmRltmUsefulSckbdInfoInqire")
     }
 }
