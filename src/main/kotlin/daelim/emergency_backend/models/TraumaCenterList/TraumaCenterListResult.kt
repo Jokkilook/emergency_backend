@@ -10,7 +10,7 @@ data class TraumaCenterListResult(
     var header:Header?,
 
     @set:JsonProperty("body")
-    var body:Body?,
+    var body:TraumaCenterListResultBody?,
 )
 
 @JsonRootName("body")
