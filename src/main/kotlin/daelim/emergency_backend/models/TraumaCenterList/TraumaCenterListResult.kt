@@ -1,5 +1,9 @@
 package daelim.emergency_backend.models
 
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonRootName
+import daelim.emergency_backend.models.AvailavleBedInfo.Header
+
 @JsonRootName("response")
 data class TraumaCenterListResult(
     @set:JsonProperty("header")
@@ -9,20 +13,10 @@ data class TraumaCenterListResult(
     var body:Body?,
 )
 
-
-@JsonRootName("header")
-data class Header(
-    @set:JsonProperty("resultCode")//결과코드
-    var resultCode:String?,
-
-    @set:JsonProperty("resultMsg")//결과메시지
-    var resultMsg:String?,
-)
-
 @JsonRootName("body")
-data class Body(
+data class TraumaCenterListResultBody(
     @set:JsonProperty("items")
-    var items:Items?,
+    var items:TraumaCenterListResultItems?,
 
     @set:JsonProperty("numOfRows")//한 페이지 결과수
     var numOfRows:Int?,
@@ -35,13 +29,13 @@ data class Body(
 )
 
 @JsonRootName("items")
-data class Items(
+data class TraumaCenterListResultItems(
     @set:JsonProperty("item")
     var item:List<TraumaCenterList>?,
 )
 
 @JsonRootName("item")
-data class Item(
+data class TraumaCenterList(
     @set:JsonProperty("rnum")
     var rnum:Int?, // 일련번호
 

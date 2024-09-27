@@ -1,10 +1,9 @@
 package daelim.emergency_backend.models.AvailavleBedInfo
 
-import com.fasterxml.jackson.annotation.JsonAlias
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonRootName
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper
-import java.util.*
+
 // ** 데이터 클래스 Xml 파싱과 함께 정의하는 방법 **
 // 반환되는 Xml 구조에 따라 똑같은 구조로 데이터 클래스를 만들어줘야함
 //
@@ -39,6 +38,7 @@ import java.util.*
 // 우선 요소인 item (응급의료정보) 클래스 (여기선 AvailableBedInfo)를 만들어준 후,
 // 오직 item(AvailableBedInfo)의 리스트를 변수로 하나 갖는 Items 클래스를 생성한다.
 // 그리고 Body 클래스의 items 변수의 자료형을 Items 클래스로 지정하고, @set:JsonProperty("items")를 해주면 된다.
+// 마지막으로 header와 body를 변수로 갖는 ~~Result 클래스를 생성해주면 된다. JsonProperty는 "response" 로 (1번 클래스)
 // 헷갈리면 이 데이터 클래스를 차근차근 살펴보는 걸 추천함.
 
 @JsonRootName("response")
@@ -48,7 +48,7 @@ data class AvailableBedInfoResult(
     var header:Header?,
 
     @set:JsonProperty("body")
-    var body:Body?,
+    var body:AvailableBedInfoBody?,
 )
 
 @JsonRootName("Header")
@@ -60,11 +60,11 @@ data class Header(
 )
 
 @JsonRootName("body")
-data class Body(
+data class AvailableBedInfoBody(
 
     @JacksonXmlElementWrapper(useWrapping = false, localName = "items")
     @set:JsonProperty("items")
-    var items:Items?,
+    var items:AvailableBedInfoItems?,
     @set:JsonProperty("numOfRows")
     var numOfRows:String?,
     @set:JsonProperty("pageNo")
@@ -74,7 +74,7 @@ data class Body(
 )
 
 @JsonRootName("items")
-data class Items(
+data class AvailableBedInfoItems(
     @set:JsonProperty("item")
     var item:List<AvailableBedInfo>?
 )

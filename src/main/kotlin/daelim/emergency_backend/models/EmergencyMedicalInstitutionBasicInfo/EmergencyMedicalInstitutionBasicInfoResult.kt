@@ -1,5 +1,9 @@
 package daelim.emergency_backend.models
 
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonRootName
+import daelim.emergency_backend.models.AvailavleBedInfo.Header
+
 
 //응급의료기관 기본정보 조회
 
@@ -10,23 +14,13 @@ data class EmergencyMedicalInstitutionBasicInfoResult(
     var header:Header?,
 
     @set:JsonProperty("body")
-    var body:Body?,
-)
-
-
-@JsonRootName("header")
-data class Header(
-    @set:JsonProperty("resultCode")//결과코드
-    var resultCode:String?,
-
-    @set:JsonProperty("resultMsg")//결과메시지
-    var resultMsg:String?,
+    var body:EmergencyMedicalInstitutionBasicInfoBody?,
 )
 
 @JsonRootName("body")
-data class Body(
+data class EmergencyMedicalInstitutionBasicInfoBody(
     @set:JsonProperty("items")
-    var items:Items?,
+    var items:EmergencyMedicalInstitutionBasicInfoItems?,
 
     @set:JsonProperty("numOfRows")//한 페이지 결과수
     var numOfRows:Int?,
@@ -39,7 +33,7 @@ data class Body(
 )
 
 @JsonRootName("items")
-data class Items(
+data class EmergencyMedicalInstitutionBasicInfoItems(
     @set:JsonProperty("item")
     var item:List<EmergencyMedicalInstitutionBasicInfo>?,
 )
