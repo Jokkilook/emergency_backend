@@ -30,7 +30,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper
 // 대부분 위와 같은 형식이니 아래 정의된 클래스를 참고하여 다른 클래스도 변환하면 됨.
 // items 부분이 까다로우니 자세히 봐야함.
 // 이 데이터 클래스의 경우 response에 해당하는 AvailableBedInfoResult 클래스 안에
-// header와 body 태그 데이터를 담아줄 변수를 놓고,
+// header와 body 태그 데이터를 담아줄 변수(변수는 모두 var 로 선언한다.)를 놓고,
 // header는 다시 header 클래스를 생성하여 태그 안의 내용인 resultCode, resultMsg 변수를 놨음.
 // 실질적인 내용이 들어가는 AvailableBedInfoResult 의 body 변수에는 다시 Body 클래스를 생성.
 // body 태그에는 item을 요소로 갖는 items 태그와, 기타 등등 3가지가 있음.
