@@ -35,9 +35,17 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper
 // 실질적인 내용이 들어가는 AvailableBedInfoResult 의 body 변수에는 다시 Body 클래스를 생성.
 // body 태그에는 item을 요소로 갖는 items 태그와, 기타 등등 3가지가 있음.
 // 기타 3가지는 그냥 태그 이름을 명시해주면 되지만, items 태그는 item이 여러개이기 때문에 다름.
-// 우선 요소인 item (응급의료정보) 클래스 (여기선 AvailableBedInfo)를 만들어준 후,
-// 오직 item(AvailableBedInfo)의 리스트를 변수로 하나 갖는 Items 클래스를 생성한다.
-// 그리고 Body 클래스의 items 변수의 자료형을 Items 클래스로 지정하고, @set:JsonProperty("items")를 해주면 된다.
+// 만들어야 할 클래스는 총 4개이다. ( ~~는 본인이 담당한 데이터의 이름)
+// 클래스의 이름은 아래 형식으로 정의한다.
+// 1. ~~Result 클래스
+// 2. ~~Body 클래스
+// 3. ~~Items 클래스
+// 4. ~~클래스 (item 클래스)
+// Header 클래스는 구조가 동일해서, 따로 만들지 않고
+// AvailableBedInfoResult.kt 의 Header를 임포트해서 사용하면 된다.
+// 우선 요소인 item (응급의료정보) 클래스 (여기선 AvailableBedInfo)를 만들어준 후, (4번 클래스)
+// 오직 item(AvailableBedInfo)의 리스트를 변수로 하나 갖는 Items 클래스를 생성한다. (3번 클래스)
+// 그리고 Body 클래스의 items 변수의 자료형을 Items 클래스로 지정하고, @set:JsonProperty("items")를 해주면 된다. (2번 클래스)
 // 마지막으로 header와 body를 변수로 갖는 ~~Result 클래스를 생성해주면 된다. JsonProperty는 "response" 로 (1번 클래스)
 // 헷갈리면 이 데이터 클래스를 차근차근 살펴보는 걸 추천함.
 
