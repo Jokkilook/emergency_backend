@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    #데이터베이스 주소
+    url: jdbc:mysql://localhost:3306/emergency_db
+    username: root
+    password: 1234
+
+jpa:
+  database-platform: org.hibernate.dialect.MySQL57Dialect
+  open-in-view: false
+  show-sql: true
+  hibernate:
+    ddl-auto: update
