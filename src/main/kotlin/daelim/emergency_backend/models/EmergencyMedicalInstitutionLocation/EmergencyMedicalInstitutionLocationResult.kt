@@ -83,3 +83,10 @@ data class EmergencyMedicalInstitutionLocation(
     @set:JsonProperty("startTime")
     var startTime: String? = null // 시작시간
 )
+
+class EmergencyMedicalInstitutionLocationQuery(
+    var WGS84_LON : Int?, // 병원경도
+    var WGS84_LAT : Int?, // 병원위도
+    var pageNo : Int?, // 페이지 번호
+    var numOfRows : Int? // 목록 건수
+)
