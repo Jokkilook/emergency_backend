@@ -230,3 +230,4 @@ fun convertXmlToAvailableBedInfoResult(xmlString: String): AvailableBedInfoResul
 
     return xmlMapper.readValue(xmlString, AvailableBedInfoResult::class.java)
 }
+

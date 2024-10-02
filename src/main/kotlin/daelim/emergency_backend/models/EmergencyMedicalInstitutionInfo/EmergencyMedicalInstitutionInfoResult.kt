@@ -10,6 +10,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import daelim.emergency_backend.models.AvailavleBedInfo.Header
 
+//응급의료기관 목록정보 조회
 @JsonRootName("response")
 data class EmergencyMedicalInstitutionInfoResult(
     @JsonProperty("header")
@@ -61,3 +62,15 @@ fun convertXmlToEmergencyMedicalInstitutionInfoResult(xmlString: String): Emerge
 
     return xmlMapper.readValue(xmlString, EmergencyMedicalInstitutionInfoResult::class.java)
 }
+
+class EmergencyMedicalInstitutionInfoQuery(
+    var Q0 : String, //시도
+    var Q1 : String, //시군구
+    var QT : String, // 진료요일
+    var Qz : Int?, // 기관분류
+    var QD : Int?, // 진료과목
+    var QN : String, // 기관명
+    var ORD: Int?, //순서
+    var pageNo : Int?, //페이지 번호
+    var numOfRows : Int? //목록 건수
+)

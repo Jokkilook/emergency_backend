@@ -20,6 +20,11 @@ class TestController(val testService: TestService) {
     fun test1():AvailableBedInfoResult{
         return testService.getTest("/getEmrrmRltmUsefulSckbdInfoInqire", mapOf())
     }
+    
+    @GetMapping("/test")
+    fun test():Mono<AvailableBedInfoResult>{
+        return testService.getTest("/getEgytLcinfoInqire")
+    }
 
     @GetMapping("/test2")
     fun test2():SevereCaseAcceptanceInfoResult{

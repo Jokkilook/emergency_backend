@@ -230,3 +230,11 @@ fun convertXmlToEmergencyMedicalInstitutionBasicInfoResult(xmlString: String): E
 
     return xmlMapper.readValue(xmlString, EmergencyMedicalInstitutionBasicInfoResult::class.java)
 }
+
+
+//API의 쿼리 클래스 만들기
+class EmergencyMedicalInstitutionBasicInfoQuery(
+    var HPID:String?,
+    var pageNo:Int?,
+    var numOfRows:Int?
+)

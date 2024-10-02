@@ -86,3 +86,11 @@ fun convertXmlToSevereCaseAcceptanceInfoResult(xmlString: String): SevereCaseAcc
 
     return xmlMapper.readValue(xmlString, SevereCaseAcceptanceInfoResult::class.java)
 }
+
+class SevereCaseAcceptanceInfoQuery(
+    var STAGE1:String,
+    var STAGE2:String,
+    var SM_TYPE:Int?,
+    var pageNo:Int?,
+    var numOfRows:Int?
+)
