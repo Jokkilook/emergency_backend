@@ -2,7 +2,12 @@ package daelim.emergency_backend.models.AvailavleBedInfo
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonRootName
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.MapperFeature
+import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule
+import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 
 // ** 데이터 클래스 Xml 파싱과 함께 정의하는 방법 **
 // 반환되는 Xml 구조에 따라 똑같은 구조로 데이터 클래스를 만들어줘야함
@@ -215,3 +220,14 @@ class AvailableBedInfoQuery(
     var pageNo:Int?,
     var numOfRows:Int?
 )
+
+fun convertXmlToAvailableBedInfoResult(xmlString: String): AvailableBedInfoResult {
+    val xmlMapper = XmlMapper(JacksonXmlModule().apply {
+        setDefaultUseWrapper(false)
+    }).registerKotlinModule()
+        .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
+        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+
+    return xmlMapper.readValue(xmlString, AvailableBedInfoResult::class.java)
+}
+

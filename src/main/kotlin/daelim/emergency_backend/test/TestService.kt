@@ -5,7 +5,17 @@ import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import daelim.emergency_backend.models.AvailavleBedInfo.AvailableBedInfoQuery
 import daelim.emergency_backend.models.AvailavleBedInfo.AvailableBedInfoResult
+import daelim.emergency_backend.models.AvailavleBedInfo.convertXmlToAvailableBedInfoResult
+import daelim.emergency_backend.models.EmergencyAndSevereCaseMessage.convertXmlToEmergencyAndSevereCaseMessageResult
+import daelim.emergency_backend.models.EmergencyMedicalInstitutionInfo.convertXmlToEmergencyMedicalInstitutionInfoResult
+import daelim.emergency_backend.models.SevereCaseAcceptanceInfo.convertXmlToSevereCaseAcceptanceInfoResult
+import daelim.emergency_backend.models.TraumaCenterBasicInfo.convertXmlToTraumaCenterBasicInfoResult
+import daelim.emergency_backend.models.TraumaCenterLocation.convertXmlToTraumaCenterLocationResult
+import daelim.emergency_backend.models.convertXmlToEmergencyMedicalInstitutionBasicInfoResult
+import daelim.emergency_backend.models.convertXmlToEmergencyMedicalInstitutionLocationResult
+import daelim.emergency_backend.models.convertXmlToTraumaCenterListResult
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
@@ -15,37 +25,41 @@ import java.net.URLEncoder
 class TestService(val webClient: WebClient) {
 
     val serviceKey = "YXCUlt2omoo9wIHweuRa2AwH00oXWywq3Up%2F6DVims6C8XED7Xcyn4SR3WaU83G73CP3%2FupnkVWkJnbDvVa%2B%2Bg%3D%3D"
-    fun getTest(url:String):Mono<AvailableBedInfoResult>{
+    fun <T> getTest(url:String, query:Map<String,String>):T{
 
         val stage1 = URLEncoder.encode("경기도", "UTF-8")
         val stage2 = URLEncoder.encode("평택시", "UTF-8")
 
         val response = webClient.get()
             .uri{
-                it.path(url)
-                    .queryParam("STAGE1",stage1)
-                    .queryParam("STAGE2",stage2)
-                .queryParam("serviceKey",serviceKey)
+                var builder = it.path(url)
+
+                query.forEach{
+                    builder.queryParam(it.key, it.value)
+                }
+
+                builder.queryParam("serviceKey",serviceKey)
                 .build()
             }
             .retrieve()
             .bodyToMono(String::class.java)
             .map { xmlString ->
-                convertXmlToAvailableBedInfoResult(xmlString) }
-        response.block()?.body?.items?.item?.forEach {
-            println(it.dutyName)
-        }
 
-        return  response
+                when (url) {
+                    "/getEmrrmRltmUsefulSckbdInfoInqire" -> { convertXmlToAvailableBedInfoResult(xmlString) }
+                    "/getSrsillDissAceptncPosblInfoInqire" -> { convertXmlToSevereCaseAcceptanceInfoResult(xmlString) }
+                    "/getEgytListInfoInqire" -> { convertXmlToEmergencyMedicalInstitutionInfoResult(xmlString) }
+                    "/getEgytLcinfoInqire" -> { convertXmlToEmergencyMedicalInstitutionLocationResult(xmlString) }
+                    "/getEgytBassInfoInqire" -> { convertXmlToEmergencyMedicalInstitutionBasicInfoResult(xmlString) }
+                    "/getStrmListInfoInqire" -> { convertXmlToTraumaCenterListResult(xmlString) }
+                    "/getStrmLcinfoInqire" -> { convertXmlToTraumaCenterLocationResult(xmlString) }
+                    "/getStrmBassInfoInqire" -> { convertXmlToTraumaCenterBasicInfoResult(xmlString) }
+                    "/getEmrrmSrsillDissMsgInqire" -> { convertXmlToEmergencyAndSevereCaseMessageResult(xmlString) }
+                    else -> { convertXmlToAvailableBedInfoResult(xmlString) }
+                }
+
+            }
+        return response.block() as T
     }
 
-    private fun convertXmlToAvailableBedInfoResult(xmlString: String): AvailableBedInfoResult {
-        val xmlMapper = XmlMapper(JacksonXmlModule().apply {
-            setDefaultUseWrapper(false)
-        }).registerKotlinModule()
-            .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-
-        return xmlMapper.readValue(xmlString, AvailableBedInfoResult::class.java)
-    }
 }
