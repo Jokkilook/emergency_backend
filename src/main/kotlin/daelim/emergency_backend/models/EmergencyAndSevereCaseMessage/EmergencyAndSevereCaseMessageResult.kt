@@ -2,6 +2,11 @@ package daelim.emergency_backend.models.EmergencyAndSevereCaseMessage
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonRootName
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.MapperFeature
+import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule
+import com.fasterxml.jackson.dataformat.xml.XmlMapper
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import daelim.emergency_backend.models.AvailavleBedInfo.Header
 
 data class EmergencyAndSevereCaseMessageResult(
@@ -49,3 +54,13 @@ data class EmergencyAndSevereCaseMessage(
     @set:JsonProperty("symBlkSttDtm") var symBlkSttDtm: Int, //차단시작
     @set:JsonProperty("sysBlkEndDtm") var sysBlkEndDtm: Int, //차단종료
 )
+
+fun convertXmlToEmergencyAndSevereCaseMessageResult(xmlString: String): EmergencyAndSevereCaseMessageResult {
+    val xmlMapper = XmlMapper(JacksonXmlModule().apply {
+        setDefaultUseWrapper(false)
+    }).registerKotlinModule()
+        .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
+        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+
+    return xmlMapper.readValue(xmlString, EmergencyAndSevereCaseMessageResult::class.java)
+}

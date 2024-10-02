@@ -2,6 +2,11 @@ package daelim.emergency_backend.models.TraumaCenterBasicInfo
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonRootName
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.MapperFeature
+import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule
+import com.fasterxml.jackson.dataformat.xml.XmlMapper
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import daelim.emergency_backend.models.AvailavleBedInfo.Header
 
 @JsonRootName("response")
@@ -94,3 +99,13 @@ data class TraumaCenterBasicInfo(
     @set:JsonProperty("hpnicuyn") var hpnicuyn: Int, //신생아중환자실
     @set:JsonProperty("hpopuyn") var hpopuyn: Int, //수술실
 )
+
+fun convertXmlToTraumaCenterBasicInfoResult(xmlString: String): TraumaCenterBasicInfoResult {
+    val xmlMapper = XmlMapper(JacksonXmlModule().apply {
+        setDefaultUseWrapper(false)
+    }).registerKotlinModule()
+        .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
+        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+
+    return xmlMapper.readValue(xmlString, TraumaCenterBasicInfoResult::class.java)
+}

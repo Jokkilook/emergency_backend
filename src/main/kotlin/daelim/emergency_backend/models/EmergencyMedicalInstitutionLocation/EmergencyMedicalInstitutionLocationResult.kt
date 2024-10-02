@@ -3,6 +3,11 @@ package daelim.emergency_backend.models
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonRootName
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.MapperFeature
+import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule
+import com.fasterxml.jackson.dataformat.xml.XmlMapper
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import daelim.emergency_backend.models.AvailavleBedInfo.Header
 
 
@@ -83,3 +88,13 @@ data class EmergencyMedicalInstitutionLocation(
     @set:JsonProperty("startTime")
     var startTime: String? = null // 시작시간
 )
+
+fun convertXmlToEmergencyMedicalInstitutionLocationResult(xmlString: String): EmergencyMedicalInstitutionLocationResult {
+    val xmlMapper = XmlMapper(JacksonXmlModule().apply {
+        setDefaultUseWrapper(false)
+    }).registerKotlinModule()
+        .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
+        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+
+    return xmlMapper.readValue(xmlString, EmergencyMedicalInstitutionLocationResult::class.java)
+}
