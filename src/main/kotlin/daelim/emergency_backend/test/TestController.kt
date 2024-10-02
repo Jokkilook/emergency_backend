@@ -10,6 +10,6 @@ class TestController(val testService: TestService) {
 
     @GetMapping("/test")
     fun test():Mono<AvailableBedInfoResult>{
-        return testService.getTest("/getEmrrmRltmUsefulSckbdInfoInqire")
+        return testService.getTest("/getEgytLcinfoInqire")
     }
 }
