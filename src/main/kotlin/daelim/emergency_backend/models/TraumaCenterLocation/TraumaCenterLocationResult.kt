@@ -69,3 +69,10 @@ fun convertXmlToTraumaCenterLocationResult(xmlString: String): TraumaCenterLocat
 
     return xmlMapper.readValue(xmlString, TraumaCenterLocationResult::class.java)
 }
+
+class TraumaCenterLocationQuery(
+    var WGS_84_LON:Double?, //병원경도
+    var WGS_84_LAT:Double?, //병원위도
+    var pageNo:Int?,
+    var numOfRows:Int
+)

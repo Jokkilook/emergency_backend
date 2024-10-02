@@ -109,3 +109,11 @@ fun convertXmlToTraumaCenterBasicInfoResult(xmlString: String): TraumaCenterBasi
 
     return xmlMapper.readValue(xmlString, TraumaCenterBasicInfoResult::class.java)
 }
+
+class TraumaCenterBasicInfoQuery(
+    var HPID:String?, //기관ID
+    var QN:String?, //기관명
+    var pageNo:Int,
+    var numOfRows:Int
+
+)

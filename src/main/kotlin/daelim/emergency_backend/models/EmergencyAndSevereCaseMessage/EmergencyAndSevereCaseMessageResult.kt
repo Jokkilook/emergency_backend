@@ -64,3 +64,12 @@ fun convertXmlToEmergencyAndSevereCaseMessageResult(xmlString: String): Emergenc
 
     return xmlMapper.readValue(xmlString, EmergencyAndSevereCaseMessageResult::class.java)
 }
+
+class EmergencyAndSevereCaseMessageQuery(
+    var HPID:String, //기관ID
+    var QN:String, //기관명
+    var Q0:String, //주소(시도)
+    var Q1:String, //주소(시군구)
+    var pageNo:Int,
+    var numOfRows:Int
+)
