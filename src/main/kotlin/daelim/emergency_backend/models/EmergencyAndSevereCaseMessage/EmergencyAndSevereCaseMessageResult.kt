@@ -2,6 +2,11 @@ package daelim.emergency_backend.models.EmergencyAndSevereCaseMessage
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonRootName
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.MapperFeature
+import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule
+import com.fasterxml.jackson.dataformat.xml.XmlMapper
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import daelim.emergency_backend.models.AvailavleBedInfo.Header
 
 data class EmergencyAndSevereCaseMessageResult(
@@ -60,11 +65,11 @@ fun convertXmlToEmergencyAndSevereCaseMessageResult(xmlString: String): Emergenc
     return xmlMapper.readValue(xmlString, EmergencyAndSevereCaseMessageResult::class.java)
 }
 
-class EmergencyAndSevereCaseMessageQuery{
+class EmergencyAndSevereCaseMessageQuery(
     var HPID:String, //기관ID
     var QN:String, //기관명
     var Q0:String, //주소(시도)
     var Q1:String, //주소(시군구)
     var pageNo:Int,
     var numOfRows:Int
-}
+)

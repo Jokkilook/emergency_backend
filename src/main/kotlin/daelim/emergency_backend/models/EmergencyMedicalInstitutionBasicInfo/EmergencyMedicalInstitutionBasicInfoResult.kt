@@ -2,6 +2,11 @@ package daelim.emergency_backend.models
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonRootName
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.MapperFeature
+import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule
+import com.fasterxml.jackson.dataformat.xml.XmlMapper
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import daelim.emergency_backend.models.AvailavleBedInfo.Header
 
 
@@ -214,4 +219,22 @@ data class EmergencyMedicalInstitutionBasicInfo(
 
     @set:JsonProperty("hpopyn")
     var hpopyn: Int? = null // 수술실
+)
+
+fun convertXmlToEmergencyMedicalInstitutionBasicInfoResult(xmlString: String): EmergencyMedicalInstitutionBasicInfoResult {
+    val xmlMapper = XmlMapper(JacksonXmlModule().apply {
+        setDefaultUseWrapper(false)
+    }).registerKotlinModule()
+        .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
+        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+
+    return xmlMapper.readValue(xmlString, EmergencyMedicalInstitutionBasicInfoResult::class.java)
+}
+
+
+//API의 쿼리 클래스 만들기
+class EmergencyMedicalInstitutionBasicInfoQuery(
+    var HPID:String?,
+    var pageNo:Int?,
+    var numOfRows:Int?
 )

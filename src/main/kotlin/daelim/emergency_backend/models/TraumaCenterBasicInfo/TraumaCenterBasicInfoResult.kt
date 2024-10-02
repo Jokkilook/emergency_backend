@@ -2,6 +2,11 @@ package daelim.emergency_backend.models.TraumaCenterBasicInfo
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonRootName
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.MapperFeature
+import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule
+import com.fasterxml.jackson.dataformat.xml.XmlMapper
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import daelim.emergency_backend.models.AvailavleBedInfo.Header
 
 @JsonRootName("response")
@@ -105,9 +110,10 @@ fun convertXmlToTraumaCenterBasicInfoResult(xmlString: String): TraumaCenterBasi
     return xmlMapper.readValue(xmlString, TraumaCenterBasicInfoResult::class.java)
 }
 
-class TraumaCenterBasicInfoQuery{
+class TraumaCenterBasicInfoQuery(
     var HPID:String?, //기관ID
     var QN:String?, //기관명
     var pageNo:Int,
     var numOfRows:Int
-}
+
+)

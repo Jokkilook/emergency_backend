@@ -2,8 +2,14 @@ package daelim.emergency_backend.models.TraumaCenterLocation
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonRootName
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.MapperFeature
+import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule
+import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import daelim.emergency_backend.models.AvailavleBedInfo.Header
+import daelim.emergency_backend.models.TraumaCenterListResult
 
 @JsonRootName("response")
 data class TraumaCenterLocationResult(
@@ -64,9 +70,9 @@ fun convertXmlToTraumaCenterLocationResult(xmlString: String): TraumaCenterLocat
     return xmlMapper.readValue(xmlString, TraumaCenterLocationResult::class.java)
 }
 
-class TraumaCenterLocationQuery{
+class TraumaCenterLocationQuery(
     var WGS_84_LON:Double?, //병원경도
     var WGS_84_LAT:Double?, //병원위도
     var pageNo:Int?,
     var numOfRows:Int
-}
+)

@@ -2,9 +2,15 @@ package daelim.emergency_backend.models.EmergencyMedicalInstitutionInfo
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonRootName
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.MapperFeature
+import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule
+import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import daelim.emergency_backend.models.AvailavleBedInfo.Header
 
+//응급의료기관 목록정보 조회
 @JsonRootName("response")
 data class EmergencyMedicalInstitutionInfoResult(
     @JsonProperty("header")
@@ -45,4 +51,26 @@ data class EmergencyMedicalInstitutionInfo(
     @set:JsonProperty("dutyTel3") var dutyTel3:String?, //응급실전화
     @set:JsonProperty("wgs84Lon") var wgs84Lon:String?, //병원경도
     @set:JsonProperty("wgs84Lat") var wgs84Lat:String? //병원 위도
+)
+
+fun convertXmlToEmergencyMedicalInstitutionInfoResult(xmlString: String): EmergencyMedicalInstitutionInfoResult {
+    val xmlMapper = XmlMapper(JacksonXmlModule().apply {
+        setDefaultUseWrapper(false)
+    }).registerKotlinModule()
+        .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
+        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+
+    return xmlMapper.readValue(xmlString, EmergencyMedicalInstitutionInfoResult::class.java)
+}
+
+class EmergencyMedicalInstitutionInfoQuery(
+    var Q0 : String, //시도
+    var Q1 : String, //시군구
+    var QT : String, // 진료요일
+    var Qz : Int?, // 기관분류
+    var QD : Int?, // 진료과목
+    var QN : String, // 기관명
+    var ORD: Int?, //순서
+    var pageNo : Int?, //페이지 번호
+    var numOfRows : Int? //목록 건수
 )

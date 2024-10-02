@@ -2,7 +2,12 @@ package daelim.emergency_backend.models.SevereCaseAcceptanceInfo
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonRootName
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.MapperFeature
+import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule
+import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import daelim.emergency_backend.models.AvailavleBedInfo.Header
 
 @JsonRootName("response")
@@ -71,6 +76,16 @@ data class SevereCaseAcceptanceInfo(
     @JsonProperty("M_KOISK_TY15_MSG") var M_KOISK_TY15_MSG:String?, //저출생 체중아 가능연령
     @JsonProperty("M_KOISK_TY27_MSG") var M_KOISK_TY27_MSG:String?, //영상의학 혈관 중재적 시술(영유아) 가능연령
 )
+
+fun convertXmlToSevereCaseAcceptanceInfoResult(xmlString: String): SevereCaseAcceptanceInfoResult {
+    val xmlMapper = XmlMapper(JacksonXmlModule().apply {
+        setDefaultUseWrapper(false)
+    }).registerKotlinModule()
+        .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
+        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+
+    return xmlMapper.readValue(xmlString, SevereCaseAcceptanceInfoResult::class.java)
+}
 
 class SevereCaseAcceptanceInfoQuery(
     var STAGE1:String,
