@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonRootName
 import daelim.emergency_backend.models.AvailavleBedInfo.Header
 
+//6. 외상센터 목록정보
+
+
 @JsonRootName("response")
 data class TraumaCenterListResult(
     @set:JsonProperty("header")
@@ -70,3 +73,20 @@ data class TraumaCenterList(
     var wgs84Lat:String? // 병원위도
 )
 
+
+//API의 쿼리 클래스 만들기
+class TraumaCenterListQuery(
+    var Q0:String?, //주소(시도)
+    var Q1:String?, //주소(시군구)
+    var QT:String?, //진료요일
+    var QZ:String?, //기관분류
+    var QD:String?, //진료과목
+
+    var QN:String?, //기관명
+    var ORD:String?, //순서
+
+
+
+    var pageNo:Int?,
+    var numOfRows:Int?
+)
