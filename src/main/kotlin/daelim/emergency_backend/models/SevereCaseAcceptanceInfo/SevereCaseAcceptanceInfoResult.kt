@@ -71,3 +71,11 @@ data class SevereCaseAcceptanceInfo(
     @JsonProperty("M_KOISK_TY15_MSG") var M_KOISK_TY15_MSG:String?, //저출생 체중아 가능연령
     @JsonProperty("M_KOISK_TY27_MSG") var M_KOISK_TY27_MSG:String?, //영상의학 혈관 중재적 시술(영유아) 가능연령
 )
+
+class SevereCaseAcceptanceInfoQuery(
+    var STAGE1:String,
+    var STAGE2:String,
+    var SM_TYPE:Int?,
+    var pageNo:Int?,
+    var numOfRows:Int?
+)
