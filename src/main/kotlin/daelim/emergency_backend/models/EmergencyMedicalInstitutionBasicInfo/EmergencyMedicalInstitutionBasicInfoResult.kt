@@ -219,7 +219,7 @@ data class EmergencyMedicalInstitutionBasicInfo(
 
 
 //API의 쿼리 클래스 만들기
-class AvailableBedInfoQuery(
+class EmergencyMedicalInstitutionBasicInfoQuery(
     var HPID:String?,
     var pageNo:Int?,
     var numOfRows:Int?
