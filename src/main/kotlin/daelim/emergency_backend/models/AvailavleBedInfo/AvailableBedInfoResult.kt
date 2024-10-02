@@ -207,3 +207,11 @@ data class AvailableBedInfo(
     @set:JsonProperty("hvs58") var hvs58:String?, //감염 중등증 병상 기준 수
     @set:JsonProperty("hvs59") var hvs59:String?, //코호트 격리 기준 수
 )
+
+//API의 쿼리 클래스 만들기
+class AvailableBedInfoQuery(
+    var STAGE1:String,
+    var STAGE2:String,
+    var pageNo:Int?,
+    var numOfRows:Int?
+)
