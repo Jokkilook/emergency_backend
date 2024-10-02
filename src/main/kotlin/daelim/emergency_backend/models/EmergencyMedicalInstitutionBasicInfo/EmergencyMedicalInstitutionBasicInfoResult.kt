@@ -215,3 +215,12 @@ data class EmergencyMedicalInstitutionBasicInfo(
     @set:JsonProperty("hpopyn")
     var hpopyn: Int? = null // 수술실
 )
+
+
+
+//API의 쿼리 클래스 만들기
+class AvailableBedInfoQuery(
+    var HPID:String?,
+    var pageNo:Int?,
+    var numOfRows:Int?
+)
