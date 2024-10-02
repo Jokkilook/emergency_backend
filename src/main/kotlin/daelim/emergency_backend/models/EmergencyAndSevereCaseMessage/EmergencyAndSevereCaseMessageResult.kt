@@ -49,3 +49,22 @@ data class EmergencyAndSevereCaseMessage(
     @set:JsonProperty("symBlkSttDtm") var symBlkSttDtm: Int, //차단시작
     @set:JsonProperty("sysBlkEndDtm") var sysBlkEndDtm: Int, //차단종료
 )
+
+fun convertXmlToEmergencyAndSevereCaseMessageResult(xmlString: String): EmergencyAndSevereCaseMessageResult {
+    val xmlMapper = XmlMapper(JacksonXmlModule().apply {
+        setDefaultUseWrapper(false)
+    }).registerKotlinModule()
+        .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
+        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+
+    return xmlMapper.readValue(xmlString, EmergencyAndSevereCaseMessageResult::class.java)
+}
+
+class EmergencyAndSevereCaseMessageQuery{
+    var HPID:String, //기관ID
+    var QN:String, //기관명
+    var Q0:String, //주소(시도)
+    var Q1:String, //주소(시군구)
+    var pageNo:Int,
+    var numOfRows:Int
+}

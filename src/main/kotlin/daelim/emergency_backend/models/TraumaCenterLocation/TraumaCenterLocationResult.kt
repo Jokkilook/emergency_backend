@@ -53,3 +53,20 @@ data class TraumaCenterLocation(
     @set:JsonProperty("longitude") var longitude:String?, //병원경도
     @set:JsonProperty("startTime") var startTime:String? //시작시간
 )
+
+fun convertXmlToTraumaCenterLocationResult(xmlString: String): TraumaCenterLocationResult {
+    val xmlMapper = XmlMapper(JacksonXmlModule().apply {
+        setDefaultUseWrapper(false)
+    }).registerKotlinModule()
+        .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
+        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+
+    return xmlMapper.readValue(xmlString, TraumaCenterLocationResult::class.java)
+}
+
+class TraumaCenterLocationQuery{
+    var WGS_84_LON:Double?, //병원경도
+    var WGS_84_LAT:Double?, //병원위도
+    var pageNo:Int?,
+    var numOfRows:Int
+}
