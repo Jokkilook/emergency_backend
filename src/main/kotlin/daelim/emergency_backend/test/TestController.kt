@@ -1,5 +1,7 @@
 package daelim.emergency_backend.test
 
+import daelim.emergency_backend.database.EmergencyHospitalData
+import daelim.emergency_backend.database.EmergencyService
 import daelim.emergency_backend.models.AvailavleBedInfo.AvailableBedInfoResult
 import daelim.emergency_backend.models.EmergencyAndSevereCaseMessage.EmergencyAndSevereCaseMessageResult
 import daelim.emergency_backend.models.EmergencyMedicalInstitutionBasicInfoResult
@@ -14,7 +16,12 @@ import org.springframework.web.bind.annotation.RestController
 import reactor.core.publisher.Mono
 
 @RestController
-class TestController(val testService: TestService) {
+class TestController(val testService: TestService, val emergencyService: EmergencyService) {
+
+    @GetMapping("/test")
+    fun test():EmergencyHospitalData?{
+        return emergencyService.test("1")
+    }
 
     @GetMapping("/test1")
     fun test1():AvailableBedInfoResult{
@@ -58,6 +65,11 @@ class TestController(val testService: TestService) {
     @GetMapping("/test9")
     fun test9():EmergencyAndSevereCaseMessageResult{
         return testService.getTest("/getEmrrmSrsillDissMsgInqire", mapOf())
+    }
+    @GetMapping("/getHospitalList")
+    fun getHostipalList():AvailableBedInfoResult {
+
+        return AvailableBedInfoResult(header = null, body = null)
     }
 
 }
