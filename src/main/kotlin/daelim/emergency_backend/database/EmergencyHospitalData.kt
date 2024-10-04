@@ -5,14 +5,14 @@ import java.sql.Timestamp
 import java.util.Date
 
 @Entity
-@Table(name = "emergencyhospitaldata")
+@Table(name = "emergency_hospital_data")
 class EmergencyHospitalData(
     @Id
     @GeneratedValue
     val id: Int = 0,
 
-    @Column val resultCode: String? = null,
-    @Column val resultMsg: String? = null,
+    @Column val result_code: String? = null,
+    @Column val result_msg: String? = null,
     @Column val rnum: String? = null,
     @Column val hpid: String? = null,
     @Column val phpid: String? = null,
@@ -78,9 +78,7 @@ class EmergencyHospitalData(
     @Column val hv41: String? = null,
     @Column val hv42: String? = null,
     @Column val hv43: String? = null,
-    @Column val dutyname: String? = null,
-    @Column val dutyAddr: String? = null,
-    @Column val dutytel3: String? = null,
-    @Column val lastUpdated: Timestamp? = null,
-    @Column val other_details: String? = null,
+    @Column val duty_name: String? = null,
+    @Column val duty_tel3: String? = null,
+    @Column val last_updated: Timestamp? = null,
 )
