@@ -1,7 +1,8 @@
 package daelim.emergency_backend.test
 
-import daelim.emergency_backend.database.EmergencyHospitalData
+import daelim.emergency_backend.database.emergencyHospital.EmergencyHospitalData
 import daelim.emergency_backend.database.EmergencyService
+import daelim.emergency_backend.database.hospitalInformation.HospitalInformation
 import daelim.emergency_backend.models.AvailavleBedInfo.AvailableBedInfoResult
 import daelim.emergency_backend.models.EmergencyAndSevereCaseMessage.EmergencyAndSevereCaseMessageResult
 import daelim.emergency_backend.models.EmergencyMedicalInstitutionBasicInfoResult
@@ -13,14 +14,18 @@ import daelim.emergency_backend.models.TraumaCenterListResult
 import daelim.emergency_backend.models.TraumaCenterLocation.TraumaCenterLocationResult
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
-import reactor.core.publisher.Mono
 
 @RestController
 class TestController(val testService: TestService, val emergencyService: EmergencyService) {
 
     @GetMapping("/test")
-    fun test():EmergencyHospitalData?{
+    fun test(): EmergencyHospitalData?{
         return emergencyService.test("1")
+    }
+
+    @GetMapping("/testhospital")
+    fun testHospital(): HospitalInformation?{
+        return emergencyService.testHospital("1")
     }
 
     @GetMapping("/test1")
