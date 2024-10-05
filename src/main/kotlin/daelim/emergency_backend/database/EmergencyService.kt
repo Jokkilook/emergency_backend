@@ -16,4 +16,9 @@ class EmergencyService(val emergencyRepository: EmergencyRepository, val hospita
     fun testHospital(id: String) : HospitalInformation? {
         return hospitalRepository.findById(id).orElse(null)
     }
+
+    fun searchWithCity(stage1:String, stage2:String) : List<HospitalInformation> {
+
+        return hospitalRepository.findByAddress(stage1,stage2);
+    }
 }
