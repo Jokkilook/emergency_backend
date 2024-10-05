@@ -27,6 +27,10 @@ class TestController(val testService: TestService, val emergencyService: Emergen
     fun testHospital(): HospitalInformation?{
         return emergencyService.testHospital("1")
     }
+    @GetMapping("/emergency-hospitals")
+    fun getEmergencyHospitals(): List<EmergencyHospitalData> {
+        return emergencyService.getAllEmergencyHospitalData()
+    }
 
     @GetMapping("/test1")
     fun test1():AvailableBedInfoResult{
