@@ -13,6 +13,7 @@ import daelim.emergency_backend.models.TraumaCenterBasicInfo.TraumaCenterBasicIn
 import daelim.emergency_backend.models.TraumaCenterListResult
 import daelim.emergency_backend.models.TraumaCenterLocation.TraumaCenterLocationResult
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -75,6 +76,15 @@ class TestController(val testService: TestService, val emergencyService: Emergen
     fun getHostipalList():AvailableBedInfoResult {
 
         return AvailableBedInfoResult(header = null, body = null)
+    }
+
+    //시군구 검색으로 병원 정보 리스트 반환하기
+    @GetMapping("/getHospitalInfoByAddr")
+    fun getByAddress(
+        @RequestParam stage1:String,
+        @RequestParam stage2:String
+    ):List<HospitalInformation>?{
+        return emergencyService.searchWithCity(stage1, stage2)
     }
 
 }
