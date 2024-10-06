@@ -1,16 +1,17 @@
 package daelim.emergency_backend.database
 
 import daelim.emergency_backend.database.emergencyHospital.EmergencyHospitalData
-import daelim.emergency_backend.database.emergencyHospital.EmergencyHospitalRepository
 import daelim.emergency_backend.database.emergencyHospital.EmergencyRepository
 import daelim.emergency_backend.database.hospitalInformation.HospitalInformation
 import daelim.emergency_backend.database.hospitalInformation.HospitalRepository
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 
 @Service
 class EmergencyService(val emergencyRepository: EmergencyRepository,
                        val hospitalRepository: HospitalRepository,
-                       val emergencyHospitalRepository: EmergencyHospitalRepository) {
+                       ) {
 
     fun test(id: String) : EmergencyHospitalData? {
         return emergencyRepository.findById(id).orElse(null)
@@ -19,7 +20,8 @@ class EmergencyService(val emergencyRepository: EmergencyRepository,
     fun testHospital(id: String) : HospitalInformation? {
         return hospitalRepository.findById(id).orElse(null)
     }
-    fun getAllEmergencyHospitalData(): List<EmergencyHospitalData> {
-        return emergencyHospitalRepository.findAll()
+    fun getAllEmergencyHospitalData(page: Int, size: Int): Page<EmergencyHospitalData> {
+        val pageable = PageRequest.of(page, size)
+        return emergencyRepository.findAll(pageable)
     }
 }
