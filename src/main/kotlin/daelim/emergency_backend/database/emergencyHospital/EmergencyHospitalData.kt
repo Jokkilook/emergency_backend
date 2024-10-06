@@ -9,7 +9,7 @@ import java.util.Date
 data class EmergencyHospitalData(
     @Id
     @GeneratedValue
-    val id: Int = 0,
+    val id: Long = 0,
 
     @Column(name = "result_code")
     val resultCode: String? = null,
