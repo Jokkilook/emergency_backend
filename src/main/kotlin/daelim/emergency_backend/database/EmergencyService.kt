@@ -9,11 +9,11 @@ import org.springframework.stereotype.Service
 @Service
 class EmergencyService(val emergencyRepository: EmergencyRepository, val hospitalRepository: HospitalRepository) {
 
-    fun test(id: String) : EmergencyHospitalData? {
+    fun test(id: Long) : EmergencyHospitalData? {
         return emergencyRepository.findById(id).orElse(null)
     }
 
-    fun testHospital(id: String) : HospitalInformation? {
+    fun testHospital(id: Long) : HospitalInformation? {
         return hospitalRepository.findById(id).orElse(null)
     }
 }
