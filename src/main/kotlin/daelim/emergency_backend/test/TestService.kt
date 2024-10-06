@@ -1,12 +1,7 @@
 package daelim.emergency_backend.test
 
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.MapperFeature
-import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule
-import com.fasterxml.jackson.dataformat.xml.XmlMapper
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import daelim.emergency_backend.models.AvailavleBedInfo.AvailableBedInfoQuery
-import daelim.emergency_backend.models.AvailavleBedInfo.AvailableBedInfoResult
+import daelim.emergency_backend.database.hospitalInformation.HospitalInformation
+import daelim.emergency_backend.database.hospitalInformation.HospitalRepository
 import daelim.emergency_backend.models.AvailavleBedInfo.convertXmlToAvailableBedInfoResult
 import daelim.emergency_backend.models.EmergencyAndSevereCaseMessage.convertXmlToEmergencyAndSevereCaseMessageResult
 import daelim.emergency_backend.models.EmergencyMedicalInstitutionInfo.convertXmlToEmergencyMedicalInstitutionInfoResult
@@ -18,11 +13,13 @@ import daelim.emergency_backend.models.convertXmlToEmergencyMedicalInstitutionLo
 import daelim.emergency_backend.models.convertXmlToTraumaCenterListResult
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
-import reactor.core.publisher.Mono
 import java.net.URLEncoder
 
 @Service
-class TestService(val webClient: WebClient) {
+class TestService(
+    val webClient: WebClient,
+    private val hospitalRepository: HospitalRepository
+) {
 
     val serviceKey = "YXCUlt2omoo9wIHweuRa2AwH00oXWywq3Up%2F6DVims6C8XED7Xcyn4SR3WaU83G73CP3%2FupnkVWkJnbDvVa%2B%2Bg%3D%3D"
     fun <T> getTest(url:String, query:Map<String,String>):T{
@@ -39,7 +36,7 @@ class TestService(val webClient: WebClient) {
                 }
 
                 builder.queryParam("serviceKey",serviceKey)
-                .build()
+                    .build()
             }
             .retrieve()
             .bodyToMono(String::class.java)
@@ -62,4 +59,8 @@ class TestService(val webClient: WebClient) {
         return response.block() as T
     }
 
+    fun getHospitalInfo(hpid: String): List<HospitalInformation> {
+        val hospitalInfo = hospitalRepository.findByHpid(hpid)
+        return hospitalInfo
+    }
 }
