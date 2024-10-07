@@ -10,6 +10,6 @@ interface HospitalRepository:JpaRepository<HospitalInformation, String> {
 
 
     //hospital information List query
-    @Query("머시기 머시기")
-    fun getHospitalInformationsByPageQuery(page:String?): List<HospitalInformation>
+    @Query("SELECT hi FROM HospitalInformation hi WHERE hi.id>:pageRange1 AND hi.id<= :pageRange2")
+    fun getHospitalInformationsByPageQuery(pageRange1:Int, pageRange2:Int): List<HospitalInformation>
 }
