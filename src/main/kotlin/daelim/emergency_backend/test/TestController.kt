@@ -12,6 +12,7 @@ import daelim.emergency_backend.models.SevereCaseAcceptanceInfo.SevereCaseAccept
 import daelim.emergency_backend.models.TraumaCenterBasicInfo.TraumaCenterBasicInfoResult
 import daelim.emergency_backend.models.TraumaCenterListResult
 import daelim.emergency_backend.models.TraumaCenterLocation.TraumaCenterLocationResult
+import org.springframework.data.domain.Page
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -27,6 +28,13 @@ class TestController(val testService: TestService, val emergencyService: Emergen
     @GetMapping("/testhospital")
     fun testHospital(): HospitalInformation?{
         return emergencyService.testHospital("1")
+    }
+    @GetMapping("/emergency-hospitals")
+    fun getEmergencyHospitals(
+        @RequestParam(defaultValue = "0") page: Int,
+        @RequestParam(defaultValue = "20") size: Int
+    ): Page<EmergencyHospitalData> {
+        return emergencyService.getAllEmergencyHospitalData(page, size)
     }
 
     @GetMapping("/test1")
