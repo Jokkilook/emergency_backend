@@ -99,8 +99,9 @@ class TestController(val testService: TestService, val emergencyService: Emergen
     //hospital information List 반환
     @GetMapping("/getHospitalInfoList")
     fun getHospitalList(
-            @RequestParam page:String?,
-    ):List<HospitalInformation>?{
-        return emergencyService.getHospitalInformationsByPage(page)
+        @RequestParam(defaultValue = "0") page: Int,
+        @RequestParam(defaultValue = "20") size: Int
+    ): Page<HospitalInformation> {
+        return emergencyService.getHospitalInformationsByPage(page, size)
     }
 }

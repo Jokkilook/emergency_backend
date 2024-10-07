@@ -1,7 +1,10 @@
 package daelim.emergency_backend.database.hospitalInformation
 
+import daelim.emergency_backend.database.emergencyHospital.EmergencyHospitalData
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 
 interface HospitalRepository:JpaRepository<HospitalInformation, String> {
 
@@ -9,7 +12,5 @@ interface HospitalRepository:JpaRepository<HospitalInformation, String> {
     fun findByAddress(stage1:String, stage2:String): List<HospitalInformation>
 
 
-    //hospital information List query
-    @Query("SELECT hi FROM HospitalInformation hi WHERE hi.id>:pageRange1 AND hi.id<= :pageRange2")
-    fun getHospitalInformationsByPageQuery(pageRange1:Int, pageRange2:Int): List<HospitalInformation>
+    override fun findAll(pageable: Pageable): Page<HospitalInformation>
 }
