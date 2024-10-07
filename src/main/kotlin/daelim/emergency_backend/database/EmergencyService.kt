@@ -20,8 +20,14 @@ class EmergencyService(val emergencyRepository: EmergencyRepository,
     fun testHospital(id: String) : HospitalInformation? {
         return hospitalRepository.findById(id).orElse(null)
     }
+    
     fun getAllEmergencyHospitalData(page: Int, size: Int): Page<EmergencyHospitalData> {
         val pageable = PageRequest.of(page, size)
         return emergencyRepository.findAll(pageable)
+    }
+    
+    fun searchWithCity(stage1:String, stage2:String) : List<HospitalInformation> {
+
+        return hospitalRepository.findByAddress(stage1,stage2);
     }
 }
