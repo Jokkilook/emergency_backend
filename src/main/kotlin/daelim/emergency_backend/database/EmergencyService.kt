@@ -21,4 +21,9 @@ class EmergencyService(val emergencyRepository: EmergencyRepository, val hospita
 
         return hospitalRepository.findByAddress(stage1,stage2);
     }
+
+    //hospital information List 반환 서비스
+    fun getHospitalInformationsByPage(page:String?): List<HospitalInformation>{
+        return hospitalRepository.getHospitalInformationsByPageQuery(page);
+    }
 }
