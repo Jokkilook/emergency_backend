@@ -12,10 +12,8 @@ import daelim.emergency_backend.models.SevereCaseAcceptanceInfo.SevereCaseAccept
 import daelim.emergency_backend.models.TraumaCenterBasicInfo.TraumaCenterBasicInfoResult
 import daelim.emergency_backend.models.TraumaCenterListResult
 import daelim.emergency_backend.models.TraumaCenterLocation.TraumaCenterLocationResult
-import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -23,12 +21,12 @@ class TestController(val testService: TestService, val emergencyService: Emergen
 
     @GetMapping("/test")
     fun test(): EmergencyHospitalData?{
-        return emergencyService.test(1)
+        return emergencyService.test("1")
     }
 
     @GetMapping("/testhospital")
     fun testHospital(): HospitalInformation?{
-        return emergencyService.testHospital(1)
+        return emergencyService.testHospital("1")
     }
 
     @GetMapping("/test1")
@@ -81,10 +79,20 @@ class TestController(val testService: TestService, val emergencyService: Emergen
         return AvailableBedInfoResult(header = null, body = null)
     }
 
-    @PostMapping("/hospitalInfo")
-    fun getHospitalInfo(@RequestBody hpid: String): ResponseEntity<List<HospitalInformation>> {
-        val hospitalInfo = testService.getHospitalInfo(hpid)
-        return ResponseEntity.ok(hospitalInfo)
+    @GetMapping("/hospital/{hpid}")
+    fun getHospitalInformation(@PathVariable hpid: String): HospitalInformation? {
+        return emergencyService.findHospitalInformationByHpid(hpid)
+    }
+
+    @GetMapping("/emergency/{hpid}")
+    fun getEmergencyHospitalData(@PathVariable hpid: String): EmergencyHospitalData? {
+        return emergencyService.findEmergencyHospitalDataByHpid(hpid)
+    }
+
+    @GetMapping("/combined/{hpid}")
+    fun getCombinedData(@PathVariable hpid: String): Map<String, Any?> {
+        val (hospitalInfo, emergencyData) = emergencyService.findByHpid(hpid)
+        return mapOf("hospitalInfo" to hospitalInfo, "emergencyData" to emergencyData)
     }
 
 }
