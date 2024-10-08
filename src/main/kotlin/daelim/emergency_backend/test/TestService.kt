@@ -58,9 +58,4 @@ class TestService(
             }
         return response.block() as T
     }
-
-    fun getHospitalInfo(hpid: String): List<HospitalInformation> {
-        val hospitalInfo = hospitalRepository.findByHpid(hpid)
-        return hospitalInfo
-    }
 }
