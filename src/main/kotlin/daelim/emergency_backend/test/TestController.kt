@@ -20,6 +20,36 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class TestController(val testService: TestService, val emergencyService: EmergencyService) {
 
+    //emergency hospital data List 반환
+    @GetMapping("/getEmergencyHospitalList")
+    fun getEmergencyHospitals(
+        @RequestParam(defaultValue = "0") page: Int,
+        @RequestParam(defaultValue = "20") size: Int
+    ): Page<EmergencyHospitalData> {
+        return emergencyService.getAllEmergencyHospitalData(page, size)
+    }
+
+    //시군구 검색으로 병원 정보 리스트 반환하기
+    @GetMapping("/getHospitalInfoByAddr")
+    fun getByAddress(
+        @RequestParam stage1:String,
+        @RequestParam stage2:String
+    ):List<HospitalInformation>?{
+        return emergencyService.searchWithCity(stage1, stage2)
+    }
+
+
+    //hospital information List 반환
+    @GetMapping("/getHospitalInfoList")
+    fun getHospitalList(
+        @RequestParam(defaultValue = "0") page: Int,
+        @RequestParam(defaultValue = "20") size: Int
+    ): Page<HospitalInformation> {
+        return emergencyService.getHospitalInformationsByPage(page, size)
+    }
+
+    //---- 이 밑은 테스트 코드, 위는 나중에 옮길 것 --------------------------------------------------
+
     @GetMapping("/test")
     fun test(): EmergencyHospitalData?{
         return emergencyService.test("1")
@@ -29,12 +59,11 @@ class TestController(val testService: TestService, val emergencyService: Emergen
     fun testHospital(): HospitalInformation?{
         return emergencyService.testHospital("1")
     }
-    @GetMapping("/emergency-hospitals")
-    fun getEmergencyHospitals(
-        @RequestParam(defaultValue = "0") page: Int,
-        @RequestParam(defaultValue = "20") size: Int
-    ): Page<EmergencyHospitalData> {
-        return emergencyService.getAllEmergencyHospitalData(page, size)
+
+    @GetMapping("/getHospitalList")
+    fun getHostipalList():AvailableBedInfoResult {
+
+        return AvailableBedInfoResult(header = null, body = null)
     }
 
     @GetMapping("/test1")
@@ -79,29 +108,5 @@ class TestController(val testService: TestService, val emergencyService: Emergen
     @GetMapping("/test9")
     fun test9():EmergencyAndSevereCaseMessageResult{
         return testService.getTest("/getEmrrmSrsillDissMsgInqire", mapOf())
-    }
-    @GetMapping("/getHospitalList")
-    fun getHostipalList():AvailableBedInfoResult {
-
-        return AvailableBedInfoResult(header = null, body = null)
-    }
-
-    //시군구 검색으로 병원 정보 리스트 반환하기
-    @GetMapping("/getHospitalInfoByAddr")
-    fun getByAddress(
-        @RequestParam stage1:String,
-        @RequestParam stage2:String
-    ):List<HospitalInformation>?{
-        return emergencyService.searchWithCity(stage1, stage2)
-    }
-
-
-    //hospital information List 반환
-    @GetMapping("/getHospitalInfoList")
-    fun getHospitalList(
-        @RequestParam(defaultValue = "0") page: Int,
-        @RequestParam(defaultValue = "20") size: Int
-    ): Page<HospitalInformation> {
-        return emergencyService.getHospitalInformationsByPage(page, size)
     }
 }
