@@ -95,4 +95,13 @@ class TestController(val testService: TestService, val emergencyService: Emergen
         return emergencyService.searchWithCity(stage1, stage2)
     }
 
+
+    //hospital information List 반환
+    @GetMapping("/getHospitalInfoList")
+    fun getHospitalList(
+        @RequestParam(defaultValue = "0") page: Int,
+        @RequestParam(defaultValue = "20") size: Int
+    ): Page<HospitalInformation> {
+        return emergencyService.getHospitalInformationsByPage(page, size)
+    }
 }

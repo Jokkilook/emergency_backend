@@ -30,4 +30,11 @@ class EmergencyService(val emergencyRepository: EmergencyRepository,
 
         return hospitalRepository.findByAddress(stage1,stage2);
     }
+
+
+
+    fun getHospitalInformationsByPage(page: Int, size: Int): Page<HospitalInformation> {
+        val pageable = PageRequest.of(page, size)
+        return hospitalRepository.findAll(pageable)
+    }
 }
