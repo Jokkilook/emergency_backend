@@ -1,6 +1,5 @@
 package daelim.emergency_backend.database.hospitalInformation
 
-import daelim.emergency_backend.database.emergencyHospital.EmergencyHospitalData
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.domain.Page
@@ -13,4 +12,7 @@ interface HospitalRepository:JpaRepository<HospitalInformation, String> {
 
 
     override fun findAll(pageable: Pageable): Page<HospitalInformation>
+
+    @Query("SELECT hi FROM HospitalInformation hi WHERE hi.hpid = :hpid")
+    fun findByHpid(hpid: String): HospitalInformation?
 }
