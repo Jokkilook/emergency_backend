@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service
 @Service
 class EmergencyService(val emergencyRepository: EmergencyRepository,
                        val hospitalRepository: HospitalRepository,
-                       ) {
+) {
 
     fun test(id: String) : EmergencyHospitalData? {
         return emergencyRepository.findById(id).orElse(null)
@@ -20,21 +20,39 @@ class EmergencyService(val emergencyRepository: EmergencyRepository,
     fun testHospital(id: String) : HospitalInformation? {
         return hospitalRepository.findById(id).orElse(null)
     }
-    
+
     fun getAllEmergencyHospitalData(page: Int, size: Int): Page<EmergencyHospitalData> {
         val pageable = PageRequest.of(page, size)
         return emergencyRepository.findAll(pageable)
     }
-    
+
     fun searchWithCity(stage1:String, stage2:String) : List<HospitalInformation> {
 
         return hospitalRepository.findByAddress(stage1,stage2);
     }
 
-
-
     fun getHospitalInformationsByPage(page: Int, size: Int): Page<HospitalInformation> {
         val pageable = PageRequest.of(page, size)
         return hospitalRepository.findAll(pageable)
+    }
+
+    fun findHospitalAndEmergencyDataByHpid(
+        hpid: String,
+        includeHospitalInfo: Boolean = true,
+        includeEmergencyData: Boolean = true
+    ): Pair<HospitalInformation?, EmergencyHospitalData?> {
+        val hospitalInfo = if (includeHospitalInfo) {
+            hospitalRepository.findByHpid(hpid)
+        } else {
+            null
+        }
+
+        val emergencyData = if (includeEmergencyData) {
+            emergencyRepository.findByHpid(hpid)
+        } else {
+            null
+        }
+
+        return Pair(hospitalInfo, emergencyData)
     }
 }
