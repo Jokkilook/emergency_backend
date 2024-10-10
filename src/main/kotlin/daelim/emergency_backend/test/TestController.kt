@@ -35,7 +35,7 @@ class TestController(val testService: TestService, val emergencyService: Emergen
 
     //시군구 검색으로 병원 정보 리스트 반환하기
     @GetMapping("/getHospitalInfoByAddr")
-    fun getByAddress(
+    fun getHospitalInfoByAddress(
         @RequestParam stage1:String,
         @RequestParam stage2:String
     ):List<HospitalInformation>?{
@@ -50,6 +50,24 @@ class TestController(val testService: TestService, val emergencyService: Emergen
         @RequestParam(defaultValue = "20") size: Int
     ): Page<HospitalInformation> {
         return emergencyService.getHospitalInformationsByPage(page, size)
+    }
+
+    /* 병원 정보만 요청하려면 /test10/{hpid}?includeEmergencyData=false
+    응급실 정보만 요청하려면 /test10/{hpid}?includeHospitalInfo=false
+    둘 다 요청하려면 /test10/{hpid} 또는 /hospital/{hpid}?includeHospitalInfo=true&includeEmergencyData=true */
+    @GetMapping("/getEmergencyAndHospitalByHpid/{hpid}")
+    fun getEmergencyAndHospitalByHpid(
+        @PathVariable hpid: String,
+        @RequestParam(required = false, defaultValue = "true") includeHospitalInfo: Boolean,
+        @RequestParam(required = false, defaultValue = "true") includeEmergencyData: Boolean
+    ): ResponseEntity<Pair<HospitalInformation?, EmergencyHospitalData?>> {
+        val result = emergencyService.findHospitalAndEmergencyDataByHpid(hpid, includeHospitalInfo, includeEmergencyData)
+
+        return if (result.first != null || result.second != null) {
+            ResponseEntity.ok(result)
+        } else {
+            ResponseEntity.notFound().build()
+        }
     }
 
     //---- 이 밑은 테스트 코드, 위는 나중에 옮길 것 --------------------------------------------------
@@ -123,23 +141,4 @@ class TestController(val testService: TestService, val emergencyService: Emergen
     fun test9():EmergencyAndSevereCaseMessageResult{
         return testService.getTest("/getEmrrmSrsillDissMsgInqire", mapOf())
     }
-
-    /* 병원 정보만 요청하려면 /test10/{hpid}?includeEmergencyData=false
-    응급실 정보만 요청하려면 /test10/{hpid}?includeHospitalInfo=false
-    둘 다 요청하려면 /test10/{hpid} 또는 /hospital/{hpid}?includeHospitalInfo=true&includeEmergencyData=true */
-    @GetMapping("/getEmergencyAndHospitalByHpid/{hpid}")
-    fun test10(
-        @PathVariable hpid: String,
-        @RequestParam(required = false, defaultValue = "true") includeHospitalInfo: Boolean,
-        @RequestParam(required = false, defaultValue = "true") includeEmergencyData: Boolean
-    ): ResponseEntity<Pair<HospitalInformation?, EmergencyHospitalData?>> {
-        val result = emergencyService.findHospitalAndEmergencyDataByHpid(hpid, includeHospitalInfo, includeEmergencyData)
-
-        return if (result.first != null || result.second != null) {
-            ResponseEntity.ok(result)
-        } else {
-            ResponseEntity.notFound().build()
-        }
-    }
-
 }
