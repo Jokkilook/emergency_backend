@@ -40,7 +40,7 @@ class EmergencyService(val emergencyRepository: EmergencyRepository,
         hpid: String,
         includeHospitalInfo: Boolean = true,
         includeEmergencyData: Boolean = true
-    ): Pair<HospitalInformation?, EmergencyHospitalData?> {
+    ): Map<String, Any?> {
         val hospitalInfo = if (includeHospitalInfo) {
             hospitalRepository.findByHpid(hpid)
         } else {
@@ -53,6 +53,7 @@ class EmergencyService(val emergencyRepository: EmergencyRepository,
             null
         }
 
-        return Pair(hospitalInfo, emergencyData)
+
+        return mutableMapOf<String, Any?>("hospitalInfo" to hospitalInfo,"emergencyInfo" to emergencyData)
     }
 }
