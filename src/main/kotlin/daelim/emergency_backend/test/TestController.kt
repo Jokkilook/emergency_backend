@@ -54,8 +54,13 @@ class TestController(val testService: TestService, val emergencyService: Emergen
     fun getHospitalList(
         @RequestParam(defaultValue = "0") page: Int,
         @RequestParam(defaultValue = "20") size: Int
-    ): Page<HospitalInformation> {
-        return emergencyService.getHospitalInformationsByPage(page, size)
+    ): ResponseEntity<Response<Page<HospitalInformation>>?> {
+        return try {
+            ResponseEntity(Response(HttpStatus.OK.value(),"success",emergencyService.getHospitalInformationsByPage(page, size)),null,HttpStatus.OK)
+        } catch (e:Exception) {
+            ResponseEntity(Response(HttpStatus.INTERNAL_SERVER_ERROR.value(),e.message.toString(),null),null, HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+
     }
 
     /* 병원 정보만 요청하려면 /test10/{hpid}?includeEmergencyData=false
