@@ -15,11 +15,13 @@ import daelim.emergency_backend.models.TraumaCenterListResult
 import daelim.emergency_backend.models.TraumaCenterLocation.TraumaCenterLocationResult
 import org.springframework.data.domain.Page
 import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatusCode
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import java.lang.Exception
 
 @RestController
 class TestController(val testService: TestService, val emergencyService: EmergencyService) {
@@ -38,8 +40,12 @@ class TestController(val testService: TestService, val emergencyService: Emergen
     fun getHospitalInfoByAddress(
         @RequestParam stage1:String,
         @RequestParam stage2:String
-    ):List<HospitalInformation>?{
-        return emergencyService.searchWithCity(stage1, stage2)
+    ):ResponseEntity<Response<List<HospitalInformation>>?>{
+        return try {
+            ResponseEntity(Response(HttpStatus.OK.value(),"success",emergencyService.searchWithCity(stage1, stage2)),null,HttpStatus.OK)
+        } catch (e:Exception) {
+            ResponseEntity(Response(HttpStatus.INTERNAL_SERVER_ERROR.value(),e.message.toString(),null),null, HttpStatus.INTERNAL_SERVER_ERROR)
+        }
     }
 
 
