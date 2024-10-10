@@ -66,13 +66,23 @@ class TestController(val testService: TestService, val emergencyService: Emergen
         @PathVariable hpid: String,
         @RequestParam(required = false, defaultValue = "true") includeHospitalInfo: Boolean,
         @RequestParam(required = false, defaultValue = "true") includeEmergencyData: Boolean
-    ): ResponseEntity<Pair<HospitalInformation?, EmergencyHospitalData?>> {
+    ): ResponseEntity<Response<Pair<HospitalInformation?, EmergencyHospitalData?>>> {
         val result = emergencyService.findHospitalAndEmergencyDataByHpid(hpid, includeHospitalInfo, includeEmergencyData)
 
         return if (result.first != null || result.second != null) {
-            ResponseEntity.ok(result)
+            val response = Response(
+                resultCode = HttpStatus.OK.value(),
+                message = "success.",
+                data = result
+            )
+            ResponseEntity.ok(response)
         } else {
-            ResponseEntity.notFound().build()
+            val response = Response<Pair<HospitalInformation?, EmergencyHospitalData?>>(
+                resultCode = HttpStatus.NOT_FOUND.value(),
+                message = "fail.",
+                data = Pair(null, null)
+            )
+            ResponseEntity.status(HttpStatus.NOT_FOUND).body(response)
         }
     }
 
