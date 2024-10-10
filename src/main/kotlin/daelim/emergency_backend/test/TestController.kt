@@ -13,7 +13,9 @@ import daelim.emergency_backend.models.TraumaCenterBasicInfo.TraumaCenterBasicIn
 import daelim.emergency_backend.models.TraumaCenterListResult
 import daelim.emergency_backend.models.TraumaCenterLocation.TraumaCenterLocationResult
 import org.springframework.data.domain.Page
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
@@ -109,4 +111,23 @@ class TestController(val testService: TestService, val emergencyService: Emergen
     fun test9():EmergencyAndSevereCaseMessageResult{
         return testService.getTest("/getEmrrmSrsillDissMsgInqire", mapOf())
     }
+
+    /* 병원 정보만 요청하려면 /test10/{hpid}?includeEmergencyData=false
+    응급실 정보만 요청하려면 /test10/{hpid}?includeHospitalInfo=false
+    둘 다 요청하려면 /test10/{hpid} 또는 /hospital/{hpid}?includeHospitalInfo=true&includeEmergencyData=true */
+    @GetMapping("/test10/{hpid}")
+    fun test10(
+        @PathVariable hpid: String,
+        @RequestParam(required = false, defaultValue = "true") includeHospitalInfo: Boolean,
+        @RequestParam(required = false, defaultValue = "true") includeEmergencyData: Boolean
+    ): ResponseEntity<Pair<HospitalInformation?, EmergencyHospitalData?>> {
+        val result = emergencyService.findHospitalAndEmergencyDataByHpid(hpid, includeHospitalInfo, includeEmergencyData)
+
+        return if (result.first != null || result.second != null) {
+            ResponseEntity.ok(result)
+        } else {
+            ResponseEntity.notFound().build()
+        }
+    }
+
 }
