@@ -66,7 +66,7 @@ class TestController(val testService: TestService, val emergencyService: Emergen
         @PathVariable hpid: String,
         @RequestParam(required = false, defaultValue = "true") includeHospitalInfo: Boolean,
         @RequestParam(required = false, defaultValue = "true") includeEmergencyData: Boolean
-    ): ResponseEntity<Response<Pair<HospitalInformation?, EmergencyHospitalData?>>> {
+    ): ResponseEntity<Response<Pair<HospitalInformation?, EmergencyHospitalData?>>?> {
         val result = emergencyService.findHospitalAndEmergencyDataByHpid(hpid, includeHospitalInfo, includeEmergencyData)
 
         return if (result.first != null || result.second != null) {
