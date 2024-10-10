@@ -89,7 +89,7 @@ class TestController(val testService: TestService, val emergencyService: Emergen
         @PathVariable error:Int
     ): ResponseEntity<Response<String>> {
 
-        val response = Response<String>(HttpStatus.OK.value(),"success","Hello zito Hello")
+        val response = Response<String>(HttpStatus.OK.value(),"success","bye bye zito bye bye")
 
         return try {
             ResponseEntity(response,null,HttpStatus.OK)
