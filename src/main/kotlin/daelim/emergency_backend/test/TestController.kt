@@ -8,11 +8,13 @@ import daelim.emergency_backend.models.EmergencyAndSevereCaseMessage.EmergencyAn
 import daelim.emergency_backend.models.EmergencyMedicalInstitutionBasicInfoResult
 import daelim.emergency_backend.models.EmergencyMedicalInstitutionInfo.EmergencyMedicalInstitutionInfoResult
 import daelim.emergency_backend.models.EmergencyMedicalInstitutionLocationResult
+import daelim.emergency_backend.models.Response
 import daelim.emergency_backend.models.SevereCaseAcceptanceInfo.SevereCaseAcceptanceInfoResult
 import daelim.emergency_backend.models.TraumaCenterBasicInfo.TraumaCenterBasicInfoResult
 import daelim.emergency_backend.models.TraumaCenterListResult
 import daelim.emergency_backend.models.TraumaCenterLocation.TraumaCenterLocationResult
 import org.springframework.data.domain.Page
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -52,9 +54,19 @@ class TestController(val testService: TestService, val emergencyService: Emergen
 
     //---- 이 밑은 테스트 코드, 위는 나중에 옮길 것 --------------------------------------------------
 
-    @GetMapping("/test")
-    fun test(): EmergencyHospitalData?{
-        return emergencyService.test("1")
+    //
+    @GetMapping("/test/{error}")
+    fun <T> test(
+        @PathVariable error:Int
+    ): ResponseEntity<Response<String>> {
+
+        val response = Response<String>(HttpStatus.OK.value(),"success","Hello zito Hello")
+
+        return try {
+            ResponseEntity(response,null,HttpStatus.OK)
+        } catch (e:Error) {
+            ResponseEntity(null,null,HttpStatus.BAD_REQUEST)
+        }
     }
 
     @GetMapping("/testhospital")
@@ -115,7 +127,7 @@ class TestController(val testService: TestService, val emergencyService: Emergen
     /* 병원 정보만 요청하려면 /test10/{hpid}?includeEmergencyData=false
     응급실 정보만 요청하려면 /test10/{hpid}?includeHospitalInfo=false
     둘 다 요청하려면 /test10/{hpid} 또는 /hospital/{hpid}?includeHospitalInfo=true&includeEmergencyData=true */
-    @GetMapping("/test10/{hpid}")
+    @GetMapping("/getEmergencyAndHospitalByHpid/{hpid}")
     fun test10(
         @PathVariable hpid: String,
         @RequestParam(required = false, defaultValue = "true") includeHospitalInfo: Boolean,
