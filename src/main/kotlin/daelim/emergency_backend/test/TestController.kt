@@ -31,8 +31,18 @@ class TestController(val testService: TestService, val emergencyService: Emergen
     fun getEmergencyHospitals(
         @RequestParam(defaultValue = "0") page: Int,
         @RequestParam(defaultValue = "20") size: Int
-    ): Page<EmergencyHospitalData> {
-        return emergencyService.getAllEmergencyHospitalData(page, size)
+    ): ResponseEntity<Response<Page<EmergencyHospitalData>>?> {
+        return try {
+            val response = Response(
+               resultCode =  HttpStatus.OK.value(),
+               message =  "success",
+               data =  emergencyService.getAllEmergencyHospitalData(page, size)
+            )
+            ResponseEntity.ok(response)
+        } catch (e:Exception) {
+            val response = Response<Page<EmergencyHospitalData>>(HttpStatus.INTERNAL_SERVER_ERROR.value(),e.message.toString(),null)
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response)
+        }
     }
 
     //시군구 검색으로 병원 정보 리스트 반환하기
