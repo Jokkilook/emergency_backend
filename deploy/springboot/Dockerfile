@@ -1,4 +1,4 @@
-FROM openjdk:17-jdk-alpine
+FROM container-registry.oracle.com/java/openjdk:21
 WORKDIR /app
 COPY build/libs/app.jar /app/app.jar
 EXPOSE 8080
