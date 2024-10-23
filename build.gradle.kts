@@ -33,6 +33,8 @@ dependencies {
 
 	implementation ("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0") //SpringDoc OpenAPI를 사용하는 Spring Boot 프로젝트에 OpenAPI 문서 생성을 위한 라이브러리
 
+	implementation("io.github.cdimascio:dotenv-kotlin:6.4.0")
+
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
