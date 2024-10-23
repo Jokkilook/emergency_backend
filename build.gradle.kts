@@ -3,6 +3,7 @@ plugins {
 	kotlin("plugin.spring") version "1.9.25"
 	id("org.springframework.boot") version "3.3.4"
 	id("io.spring.dependency-management") version "1.1.6"
+	id("com.google.cloud.tools.jib") version "3.4.3"
 }
 
 group = "daelim"
@@ -33,6 +34,8 @@ dependencies {
 
 	implementation ("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0") //SpringDoc OpenAPI를 사용하는 Spring Boot 프로젝트에 OpenAPI 문서 생성을 위한 라이브러리
 
+	implementation("io.github.cdimascio:dotenv-kotlin:6.4.0")
+
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
@@ -46,4 +49,14 @@ kotlin {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+jib {
+	to {
+		image = "docker-repo.minq.work/my-app:latest"  // Docker 이미지 경로
+		auth {
+			username = System.getenv("REGISTRY_USER")  // 환경 변수에서 인증 정보 불러오기
+			password = System.getenv("REGISTRY_PASSWORD")
+		}
+	}
 }
