@@ -3,6 +3,7 @@ plugins {
 	kotlin("plugin.spring") version "1.9.25"
 	id("org.springframework.boot") version "3.3.4"
 	id("io.spring.dependency-management") version "1.1.6"
+	id("com.google.cloud.tools.jib") version "3.4.3"
 }
 
 group = "daelim"
@@ -48,4 +49,14 @@ kotlin {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+jib {
+	to {
+		image = "docker-repo.minq.work/my-app:latest"  // Docker 이미지 경로
+		auth {
+			username = System.getenv("REGISTRY_USER")  // 환경 변수에서 인증 정보 불러오기
+			password = System.getenv("REGISTRY_PASSWORD")
+		}
+	}
 }
