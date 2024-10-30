@@ -4,6 +4,7 @@ import daelim.emergency_backend.database.emergencyHospital.EmergencyHospitalData
 import daelim.emergency_backend.database.emergencyHospital.EmergencyRepository
 import daelim.emergency_backend.database.hospitalInformation.HospitalInformation
 import daelim.emergency_backend.database.hospitalInformation.HospitalRepository
+import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service
 class EmergencyService(val emergencyRepository: EmergencyRepository,
                        val hospitalRepository: HospitalRepository,
 ) {
+    val logger = LoggerFactory.getLogger(EmergencyService::class.java)
 
     fun test(id: String) : EmergencyHospitalData? {
         return emergencyRepository.findById(id).orElse(null)
@@ -27,7 +29,6 @@ class EmergencyService(val emergencyRepository: EmergencyRepository,
     }
 
     fun searchWithCity(stage1:String, stage2:String) : List<HospitalInformation> {
-
         return hospitalRepository.findByAddress(stage1,stage2);
     }
 
