@@ -15,6 +15,7 @@ import daelim.emergency_backend.models.TraumaCenterListResult
 import daelim.emergency_backend.models.TraumaCenterLocation.TraumaCenterLocationResult
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -27,7 +28,7 @@ import java.lang.Exception
 @RestController
 class TestController(val testService: TestService, val emergencyService: EmergencyService) {
     //---- 이 밑은 테스트 코드, 위는 나중에 옮길 것 --------------------------------------------------
-
+    val logger = LoggerFactory.getLogger(TestController::class.java)
 
     @GetMapping("/test/{error}")
     fun <T> test(

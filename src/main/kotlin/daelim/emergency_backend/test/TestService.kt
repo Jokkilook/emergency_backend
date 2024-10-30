@@ -16,6 +16,7 @@ import daelim.emergency_backend.models.TraumaCenterLocation.convertXmlToTraumaCe
 import daelim.emergency_backend.models.convertXmlToEmergencyMedicalInstitutionBasicInfoResult
 import daelim.emergency_backend.models.convertXmlToEmergencyMedicalInstitutionLocationResult
 import daelim.emergency_backend.models.convertXmlToTraumaCenterListResult
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
@@ -25,6 +26,8 @@ import java.net.URLEncoder
 class TestService(val webClient: WebClient) {
 
     val serviceKey = "YXCUlt2omoo9wIHweuRa2AwH00oXWywq3Up%2F6DVims6C8XED7Xcyn4SR3WaU83G73CP3%2FupnkVWkJnbDvVa%2B%2Bg%3D%3D"
+
+    val logger = LoggerFactory.getLogger(TestService::class.java)
     fun <T> getTest(url:String, query:Map<String,String>):T{
 
         val stage1 = URLEncoder.encode("경기도", "UTF-8")

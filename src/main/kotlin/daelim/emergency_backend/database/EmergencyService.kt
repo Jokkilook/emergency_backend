@@ -7,6 +7,7 @@ import daelim.emergency_backend.database.hospitalInformation.HospitalRepository
 import daelim.emergency_backend.exception.DataNotFoundException
 import daelim.emergency_backend.exception.EmergencyDataNotFoundException
 import daelim.emergency_backend.exception.HospitalNotFoundException
+import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
@@ -16,6 +17,7 @@ class EmergencyService(
     val emergencyRepository: EmergencyRepository,
     val hospitalRepository: HospitalRepository,
 ) {
+    val logger = LoggerFactory.getLogger(EmergencyService::class.java)
 
     fun test(id: String): EmergencyHospitalData {
         return emergencyRepository.findById(id).orElseThrow {
