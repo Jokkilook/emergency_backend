@@ -3,11 +3,11 @@ package daelim.emergency_backend.controller
 import daelim.emergency_backend.database.emergencyHospital.EmergencyHospitalData
 import daelim.emergency_backend.database.EmergencyService
 import daelim.emergency_backend.database.hospitalInformation.HospitalInformation
-import daelim.emergency_backend.exception.DataNotFoundException
 import daelim.emergency_backend.exception.EmergencyException
 import daelim.emergency_backend.models.Response
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -16,11 +16,11 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.lang.Exception
-import java.util.logging.Logger
 
 @Tag(name = "Emergency API", description = "응급실, 병원 정보 반환 API")
 @RestController
 class EmergnecyController(val emergencyService: EmergencyService) {
+    val logger = LoggerFactory.getLogger(EmergnecyController::class.java)
 
     //emergency hospital data List 반환
     @Operation(summary = "응급 병원 리스트 가져오기", description = "응급 병원 데이터를 페이징하여 반환합니다.")
@@ -37,7 +37,7 @@ class EmergnecyController(val emergencyService: EmergencyService) {
             )
             ResponseEntity.ok(response)
         } catch (e: EmergencyException) {
-            logger.error(e.message ?: "Unknown error")
+            logger.error(e.message ?: "Failed error")
             val response = Response<Page<EmergencyHospitalData>>(e.errorCode.code, e.message, null)
             ResponseEntity(response, null, HttpStatus.INTERNAL_SERVER_ERROR)
         }
@@ -71,7 +71,7 @@ class EmergnecyController(val emergencyService: EmergencyService) {
             )
             ResponseEntity.ok(response)
         } catch (e: EmergencyException) {
-            Logger.error(e.message ?: "Unknown error")
+            logger.error(e.message ?: "Failed error")
             val response = Response<Page<HospitalInformation>>(e.errorCode.code, e.message, null)
             ResponseEntity(response, null, HttpStatus.INTERNAL_SERVER_ERROR)
         }
