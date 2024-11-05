@@ -87,20 +87,27 @@ class EmergencyController(val emergencyService: EmergencyService) {
     ): ResponseEntity<Response<Map<String, Any?>>?> {
         val result = emergencyService.findHospitalAndEmergencyDataByHpid(hpid, includeHospitalInfo, includeEmergencyData)
 
-        return if (result["hospitalInfo"] != null || result["emergencyInfo"] != null) {
-            val response = Response(
-                resultCode = HttpStatus.OK.value(),
-                message = "success.",
-                data = result
-            )
-            ResponseEntity.ok(response)
-        } else {
-            val response = Response(
-                resultCode = HttpStatus.NOT_FOUND.value(),
-                message = "fail.",
-                data = mapOf<String, Any?>("hospitalInfo" to null,"emergencyInfo" to null)
-            )
-            ResponseEntity.status(HttpStatus.NOT_FOUND).body(response)
+        return try{
+            if (result["hospitalInfo"] != null || result["emergencyInfo"] != null) {
+                val response = Response(
+                    resultCode = HttpStatus.OK.value(),
+                    message = "success.",
+                    data = result
+                )
+                ResponseEntity.ok(response)
+            } else {
+                val response = Response(
+                    resultCode = HttpStatus.NOT_FOUND.value(),
+                    message = "fail.",
+                    data = mapOf<String, Any?>("hospitalInfo" to null,"emergencyInfo" to null)
+                )
+                ResponseEntity.status(HttpStatus.NOT_FOUND).body(response)
+            }
+        }catch(e:EmergencyException){
+            logger.info(e.message)
+            ResponseEntity(Response(e.errorCode.code,e.message,null),null, HttpStatus.INTERNAL_SERVER_ERROR)
         }
+
+
     }
 }
