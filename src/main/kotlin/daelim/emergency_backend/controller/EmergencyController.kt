@@ -3,6 +3,8 @@ package daelim.emergency_backend.controller
 import daelim.emergency_backend.database.emergencyHospital.EmergencyHospitalData
 import daelim.emergency_backend.database.EmergencyService
 import daelim.emergency_backend.database.hospitalInformation.HospitalInformation
+import daelim.emergency_backend.exception.DataNotFoundException
+import daelim.emergency_backend.exception.EmergencyException
 import daelim.emergency_backend.models.Response
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -29,14 +31,15 @@ class EmergencyController(val emergencyService: EmergencyService) {
     ): ResponseEntity<Response<Page<EmergencyHospitalData>>?> {
         return try {
             val response = Response(
-                resultCode =  HttpStatus.OK.value(),
-                message =  "success",
-                data =  emergencyService.getAllEmergencyHospitalData(page, size)
+                HttpStatus.OK.value(),
+                "success",
+                emergencyService.getAllEmergencyHospitalData(page, size)
             )
             ResponseEntity.ok(response)
-        } catch (e:Exception) {
-            val response = Response<Page<EmergencyHospitalData>>(HttpStatus.INTERNAL_SERVER_ERROR.value(),e.message.toString(),null)
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response)
+        } catch (e: EmergencyException) {
+            logger.error(e.message ?: "Unknown error")
+            val response = Response<Page<EmergencyHospitalData>>(e.errorCode.code, e.message, null)
+            ResponseEntity(response, null, HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
 
@@ -48,8 +51,9 @@ class EmergencyController(val emergencyService: EmergencyService) {
     ): ResponseEntity<Response<List<HospitalInformation>>?>{
         return try {
             ResponseEntity(Response(HttpStatus.OK.value(),"success",emergencyService.searchWithCity(stage1, stage2)),null,HttpStatus.OK)
-        } catch (e:Exception) {
-            ResponseEntity(Response(HttpStatus.INTERNAL_SERVER_ERROR.value(),e.message.toString(),null),null, HttpStatus.INTERNAL_SERVER_ERROR)
+        } catch (e: EmergencyException) {
+            logger.info(e.message)
+            ResponseEntity(Response(e.errorCode.code,e.message,null),null, HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
 
@@ -61,11 +65,17 @@ class EmergencyController(val emergencyService: EmergencyService) {
         @RequestParam(defaultValue = "20") size: Int
     ): ResponseEntity<Response<Page<HospitalInformation>>?> {
         return try {
-            ResponseEntity(Response(HttpStatus.OK.value(),"success",emergencyService.getHospitalInformationsByPage(page, size)),null,HttpStatus.OK)
-        } catch (e:Exception) {
-            ResponseEntity(Response(HttpStatus.INTERNAL_SERVER_ERROR.value(),e.message.toString(),null),null, HttpStatus.INTERNAL_SERVER_ERROR)
+            val response = Response(
+                HttpStatus.OK.value(),
+                "success",
+                emergencyService.getHospitalInformationsByPage(page, size)
+            )
+            ResponseEntity.ok(response)
+        } catch (e: EmergencyException) {
+            logger.error(e.message ?: "Unknown error")
+            val response = Response<Page<HospitalInformation>>(e.errorCode.code, e.message, null)
+            ResponseEntity(response, null, HttpStatus.INTERNAL_SERVER_ERROR)
         }
-
     }
 
     @Operation(summary = "병원 정보와 응급실 정보 반환", description = "hpid로 병원 정보와 응급실 정보를 선택적으로 반환합니다.")
