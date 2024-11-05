@@ -5,6 +5,7 @@ import daelim.emergency_backend.database.EmergencyService
 import daelim.emergency_backend.database.hospitalInformation.HospitalInformation
 import daelim.emergency_backend.exception.DataNotFoundException
 import daelim.emergency_backend.exception.EmergencyException
+import daelim.emergency_backend.exception.ErrorCode
 import daelim.emergency_backend.models.Response
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -104,7 +105,12 @@ class EmergencyController(val emergencyService: EmergencyService) {
                 ResponseEntity.status(HttpStatus.NOT_FOUND).body(response)
             }
         }catch(e:EmergencyException){
-            logger.info(e.message)
+
+            logger.info("getEmergencyAndHospitalByHpid ---- invalid HPID")
+            logger.error(ErrorCode.DATA_NOT_FOUND.code.toString())
+            logger.error(ErrorCode.DATA_NOT_FOUND.message)
+            logger.warn("정확한 hpid를 입력하세요")
+            logger.warn("request valid hpid")
             ResponseEntity(Response(e.errorCode.code,e.message,null),null, HttpStatus.INTERNAL_SERVER_ERROR)
         }
 
