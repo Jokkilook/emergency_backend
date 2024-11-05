@@ -3,6 +3,8 @@ package daelim.emergency_backend.controller
 import daelim.emergency_backend.database.emergencyHospital.EmergencyHospitalData
 import daelim.emergency_backend.database.EmergencyService
 import daelim.emergency_backend.database.hospitalInformation.HospitalInformation
+import daelim.emergency_backend.exception.DataNotFoundException
+import daelim.emergency_backend.exception.EmergencyException
 import daelim.emergency_backend.models.Response
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -48,8 +50,9 @@ class EmergencyController(val emergencyService: EmergencyService) {
     ): ResponseEntity<Response<List<HospitalInformation>>?>{
         return try {
             ResponseEntity(Response(HttpStatus.OK.value(),"success",emergencyService.searchWithCity(stage1, stage2)),null,HttpStatus.OK)
-        } catch (e:Exception) {
-            ResponseEntity(Response(HttpStatus.INTERNAL_SERVER_ERROR.value(),e.message.toString(),null),null, HttpStatus.INTERNAL_SERVER_ERROR)
+        } catch (e: EmergencyException) {
+            logger.info(e.message)
+            ResponseEntity(Response(e.errorCode.code,e.message,null),null, HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
 
