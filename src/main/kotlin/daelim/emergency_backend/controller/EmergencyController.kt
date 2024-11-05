@@ -31,14 +31,15 @@ class EmergencyController(val emergencyService: EmergencyService) {
     ): ResponseEntity<Response<Page<EmergencyHospitalData>>?> {
         return try {
             val response = Response(
-                resultCode =  HttpStatus.OK.value(),
-                message =  "success",
-                data =  emergencyService.getAllEmergencyHospitalData(page, size)
+                HttpStatus.OK.value(),
+                "success",
+                emergencyService.getAllEmergencyHospitalData(page, size)
             )
             ResponseEntity.ok(response)
-        } catch (e:Exception) {
-            val response = Response<Page<EmergencyHospitalData>>(HttpStatus.INTERNAL_SERVER_ERROR.value(),e.message.toString(),null)
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response)
+        } catch (e: EmergencyException) {
+            logger.error(e.message ?: "Unknown error")
+            val response = Response<Page<EmergencyHospitalData>>(e.errorCode.code, e.message, null)
+            ResponseEntity(response, null, HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
 
@@ -64,11 +65,17 @@ class EmergencyController(val emergencyService: EmergencyService) {
         @RequestParam(defaultValue = "20") size: Int
     ): ResponseEntity<Response<Page<HospitalInformation>>?> {
         return try {
-            ResponseEntity(Response(HttpStatus.OK.value(),"success",emergencyService.getHospitalInformationsByPage(page, size)),null,HttpStatus.OK)
-        } catch (e:Exception) {
-            ResponseEntity(Response(HttpStatus.INTERNAL_SERVER_ERROR.value(),e.message.toString(),null),null, HttpStatus.INTERNAL_SERVER_ERROR)
+            val response = Response(
+                HttpStatus.OK.value(),
+                "success",
+                emergencyService.getHospitalInformationsByPage(page, size)
+            )
+            ResponseEntity.ok(response)
+        } catch (e: EmergencyException) {
+            logger.error(e.message ?: "Unknown error")
+            val response = Response<Page<HospitalInformation>>(e.errorCode.code, e.message, null)
+            ResponseEntity(response, null, HttpStatus.INTERNAL_SERVER_ERROR)
         }
-
     }
 
     @Operation(summary = "병원 정보와 응급실 정보 반환", description = "hpid로 병원 정보와 응급실 정보를 선택적으로 반환합니다.")
