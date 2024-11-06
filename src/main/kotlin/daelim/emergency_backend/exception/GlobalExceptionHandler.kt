@@ -1,5 +1,6 @@
 package daelim.emergency_backend.exception
 
+import daelim.emergency_backend.controller.EmergencyController
 import daelim.emergency_backend.models.Response
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -10,7 +11,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 @RestControllerAdvice
 class GlobalExceptionHandler {
 
-    private val logger = LoggerFactory.getLogger(this::class.java)
+    private val logger = LoggerFactory.getLogger(EmergencyController::class.java)
 
     @ExceptionHandler(EmergencyException::class)
     fun handleEmergencyException(e: EmergencyException): ResponseEntity<Response<Nothing>> {
