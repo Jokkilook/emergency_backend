@@ -16,6 +16,6 @@ steps:
       - 'hospital-main-api-server-prod'
       - '--image=asia-northeast3-docker.pkg.dev/hospital-440202/hospital/prod:latest'
       - '--platform=managed'
-      - '--region=asia-northeast3'
+      - '--region=asia-east1'
 options:
   logging: CLOUD_LOGGING_ONLY
