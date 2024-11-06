@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.lang.Exception
+
 @Tag(name = "Emergency API", description = "응급실, 병원 정보 반환 API")
 @RestController
 class EmergencyController(val emergencyService: EmergencyService) {
@@ -38,7 +39,7 @@ class EmergencyController(val emergencyService: EmergencyService) {
             )
             ResponseEntity.ok(response)
         } catch (e: EmergencyException) {
-            logger.error(e.message ?: "Unknown error")
+            logger.error(e.message ?: "Failed error")
             val response = Response<Page<EmergencyHospitalData>>(e.errorCode.code, e.message, null)
             ResponseEntity(response, null, HttpStatus.INTERNAL_SERVER_ERROR)
         }
@@ -73,7 +74,7 @@ class EmergencyController(val emergencyService: EmergencyService) {
             )
             ResponseEntity.ok(response)
         } catch (e: EmergencyException) {
-            logger.error(e.message ?: "Unknown error")
+            logger.error(e.message ?: "Failed error")
             val response = Response<Page<HospitalInformation>>(e.errorCode.code, e.message, null)
             ResponseEntity(response, null, HttpStatus.INTERNAL_SERVER_ERROR)
         }
