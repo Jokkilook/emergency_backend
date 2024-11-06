@@ -3,7 +3,9 @@ package daelim.emergency_backend.controller
 import daelim.emergency_backend.database.emergencyHospital.EmergencyHospitalData
 import daelim.emergency_backend.database.EmergencyService
 import daelim.emergency_backend.database.hospitalInformation.HospitalInformation
+import daelim.emergency_backend.exception.DataNotFoundException
 import daelim.emergency_backend.exception.EmergencyException
+import daelim.emergency_backend.exception.ErrorCode
 import daelim.emergency_backend.models.Response
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -19,8 +21,8 @@ import java.lang.Exception
 
 @Tag(name = "Emergency API", description = "응급실, 병원 정보 반환 API")
 @RestController
-class EmergnecyController(val emergencyService: EmergencyService) {
-    val logger = LoggerFactory.getLogger(EmergnecyController::class.java)
+class EmergencyController(val emergencyService: EmergencyService) {
+    val logger = LoggerFactory.getLogger(EmergencyController::class.java)
 
     //emergency hospital data List 반환
     @Operation(summary = "응급 병원 리스트 가져오기", description = "응급 병원 데이터를 페이징하여 반환합니다.")
@@ -51,8 +53,9 @@ class EmergnecyController(val emergencyService: EmergencyService) {
     ): ResponseEntity<Response<List<HospitalInformation>>?>{
         return try {
             ResponseEntity(Response(HttpStatus.OK.value(),"success",emergencyService.searchWithCity(stage1, stage2)),null,HttpStatus.OK)
-        } catch (e:Exception) {
-            ResponseEntity(Response(HttpStatus.INTERNAL_SERVER_ERROR.value(),e.message.toString(),null),null, HttpStatus.INTERNAL_SERVER_ERROR)
+        } catch (e: EmergencyException) {
+            logger.info(e.message)
+            ResponseEntity(Response(e.errorCode.code,e.message,null),null, HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
 
@@ -84,22 +87,32 @@ class EmergnecyController(val emergencyService: EmergencyService) {
         @RequestParam(required = false, defaultValue = "true") includeHospitalInfo: Boolean,
         @RequestParam(required = false, defaultValue = "true") includeEmergencyData: Boolean
     ): ResponseEntity<Response<Map<String, Any?>>?> {
-        val result = emergencyService.findHospitalAndEmergencyDataByHpid(hpid, includeHospitalInfo, includeEmergencyData)
+        var rootResult :Map<String, Any?> = emptyMap()
+        try{
+            val result = emergencyService.findHospitalAndEmergencyDataByHpid(hpid, includeHospitalInfo, includeEmergencyData)
+            rootResult = result
+        }catch (
+            e:EmergencyException
+        ){
 
-        return if (result["hospitalInfo"] != null || result["emergencyInfo"] != null) {
-            val response = Response(
-                resultCode = HttpStatus.OK.value(),
-                message = "success.",
-                data = result
-            )
-            ResponseEntity.ok(response)
-        } else {
-            val response = Response(
-                resultCode = HttpStatus.NOT_FOUND.value(),
-                message = "fail.",
-                data = mapOf<String, Any?>("hospitalInfo" to null,"emergencyInfo" to null)
-            )
-            ResponseEntity.status(HttpStatus.NOT_FOUND).body(response)
+            logger.info("getEmergencyAndHospitalByHpid ---- invalid HPID")
+            logger.error(ErrorCode.DATA_NOT_FOUND.code.toString())
+            logger.error(ErrorCode.DATA_NOT_FOUND.message)
+            logger.warn("정확한 hpid를 입력하세요")
+            logger.warn("request valid hpid")
         }
+        if(rootResult["hospitalInfo"] == null && rootResult["emergencyInfo"] == null){
+
+            throw DataNotFoundException("invalid HPID")
+        }
+
+
+        val response = Response(
+            resultCode = HttpStatus.OK.value(),
+            message = "success.",
+            data = rootResult
+        )
+        return ResponseEntity.ok(response)
+
     }
 }
