@@ -86,34 +86,32 @@ class EmergencyController(val emergencyService: EmergencyService) {
         @RequestParam(required = false, defaultValue = "true") includeHospitalInfo: Boolean,
         @RequestParam(required = false, defaultValue = "true") includeEmergencyData: Boolean
     ): ResponseEntity<Response<Map<String, Any?>>?> {
-        val result = emergencyService.findHospitalAndEmergencyDataByHpid(hpid, includeHospitalInfo, includeEmergencyData)
-
-        return try{
-            if (result["hospitalInfo"] != null || result["emergencyInfo"] != null) {
-                val response = Response(
-                    resultCode = HttpStatus.OK.value(),
-                    message = "success.",
-                    data = result
-                )
-                ResponseEntity.ok(response)
-            } else {
-                val response = Response(
-                    resultCode = HttpStatus.NOT_FOUND.value(),
-                    message = "fail.",
-                    data = mapOf<String, Any?>("hospitalInfo" to null,"emergencyInfo" to null)
-                )
-                ResponseEntity.status(HttpStatus.NOT_FOUND).body(response)
-            }
-        }catch(e:EmergencyException){
+        var rootResult :Map<String, Any?> = emptyMap()
+        try{
+            val result = emergencyService.findHospitalAndEmergencyDataByHpid(hpid, includeHospitalInfo, includeEmergencyData)
+            rootResult = result
+        }catch (
+            e:EmergencyException
+        ){
 
             logger.info("getEmergencyAndHospitalByHpid ---- invalid HPID")
             logger.error(ErrorCode.DATA_NOT_FOUND.code.toString())
             logger.error(ErrorCode.DATA_NOT_FOUND.message)
             logger.warn("정확한 hpid를 입력하세요")
             logger.warn("request valid hpid")
-            ResponseEntity(Response(e.errorCode.code,e.message,null),null, HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+        if(rootResult["hospitalInfo"] == null && rootResult["emergencyInfo"] == null){
+
+            throw DataNotFoundException("invalid HPID")
         }
 
+
+        val response = Response(
+            resultCode = HttpStatus.OK.value(),
+            message = "success.",
+            data = rootResult
+        )
+        return ResponseEntity.ok(response)
 
     }
 }
