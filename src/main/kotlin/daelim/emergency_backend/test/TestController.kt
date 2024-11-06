@@ -23,12 +23,21 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import utils.EmergencyUtils
 import java.lang.Exception
 @Tag(name = "Test API", description = "테스트 API")
 @RestController
 class TestController(val testService: TestService, val emergencyService: EmergencyService) {
     //---- 이 밑은 테스트 코드, 위는 나중에 옮길 것 --------------------------------------------------
     val logger = LoggerFactory.getLogger(TestController::class.java)
+
+    @GetMapping("/test/distance")
+    fun testDistance(
+        @RequestParam(defaultValue = "37.34399215") lat: Double,
+        @RequestParam(defaultValue = "126.94353722") lon: Double):Double{
+
+        return EmergencyUtils.getDistanceWithLonLat(lat,lon,37.34440803,126.94307256)
+    }
 
     @GetMapping("/test/{error}")
     fun <T> test(
