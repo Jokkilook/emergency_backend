@@ -14,7 +14,7 @@ steps:
       - 'run'
       - 'deploy'
       - 'hospital-main-api-server-prod'
-      - '--image=asia-northeast3-docker.pkg.dev/hospital-440202/hospital/prod:latest'
+      - '--image=https://asia-east1-docker.pkg.dev/hospital-440202/hospital-main-api-server/prod:latest'
       - '--platform=managed'
       - '--region=asia-east1'
 options:
