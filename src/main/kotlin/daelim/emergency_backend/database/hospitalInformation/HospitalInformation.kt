@@ -196,3 +196,20 @@ data class HospitalInformation(
     @Column(name = "last_updated")
     val lastUpdated: Timestamp? = null
 )
+
+
+@Entity
+@Table(name = "hospital_information_with_distance")
+data class HospitalInformationWithDistance(
+    @Id
+    @Column(name = "id")
+    private val id: Long = 0,
+
+    @ManyToOne
+    @JoinColumn(name = "hospital")
+    val hospital: HospitalInformation,
+
+
+    @Column(name = "distance")
+    val distance: Double? = null
+)

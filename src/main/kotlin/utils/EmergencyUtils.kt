@@ -1,11 +1,22 @@
 package utils
 
+import daelim.emergency_backend.exception.InvalidCoordinatesParameterException
 import kotlin.math.*
 
 class EmergencyUtils {
     companion object {
         //m단위 변한
         fun getDistanceWithLonLat(originLat:Double, originLon:Double, targetLat:Double, targetLon:Double):Double{
+
+            if (//
+                originLat > 90.0 || originLat < -90.0 //
+                || targetLat > 90.0 || targetLat < -90.0 //
+                || originLon > 180.0 || originLon < -180.0 //
+                || targetLon > 180.0 || targetLon < -180.0 //
+            ) {
+                throw InvalidCoordinatesParameterException()
+            }
+
             var distance = 0.0
             val R = 6371.0 //지구 평균 반지름 (km)
             
