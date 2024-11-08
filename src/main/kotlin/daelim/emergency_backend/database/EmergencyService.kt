@@ -2,15 +2,20 @@ package daelim.emergency_backend.database
 
 import daelim.emergency_backend.database.emergencyHospital.EmergencyHospitalData
 import daelim.emergency_backend.database.emergencyHospital.EmergencyRepository
+import daelim.emergency_backend.database.hospitalInformation.HospitalInformationWithDistance
 import daelim.emergency_backend.database.hospitalInformation.HospitalInformation
 import daelim.emergency_backend.database.hospitalInformation.HospitalRepository
 import daelim.emergency_backend.exception.DataNotFoundException
 import daelim.emergency_backend.exception.EmergencyDataNotFoundException
 import daelim.emergency_backend.exception.HospitalNotFoundException
+import daelim.emergency_backend.exception.InvalidParameterException
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
+import utils.EmergencyUtils.Companion.getDistanceWithLonLat
 
 @Service
 class EmergencyService(
@@ -44,9 +49,46 @@ class EmergencyService(
         return hospitals
     }
 
-    fun getHospitalInformationsByPage(page: Int, size: Int): Page<HospitalInformation> {
+    fun getHospitalInformationsByPage(
+        page: Int,
+        size: Int,
+        sortType: Int,
+        originLat: Double?,
+        originLon: Double?
+    ): Page<HospitalInformationWithDistance> {
+
+        val hospitals = hospitalRepository.findAll()
+        val hospitalDistances: MutableList<HospitalInformationWithDistance> = mutableListOf()
+        if(originLat !=null &&originLon !=null){
+
+             hospitals.forEach { hospital ->
+                val distance = getDistanceWithLonLat(originLat, originLon, hospital.wgs84Lat!! , hospital.wgs84Lon!!)
+                 hospitalDistances.add(HospitalInformationWithDistance(hospital.id,hospital, distance))
+            }
+        }else if(originLat ==null &&originLon ==null){
+
+            hospitals.forEach { hospital ->
+                hospitalDistances.add(HospitalInformationWithDistance(hospital.id,hospital, -1.0))
+            }
+        }else{
+            throw InvalidParameterException()
+        }
+
+        val sortedHospitals = when (sortType) {
+            0 -> hospitalDistances.sortedBy { it.hospital.dutyName } // 이름순
+            1 -> hospitalDistances.sortedBy { it.distance } // 거리순
+//            2 -> hospitalDistances.sortedByDescending { it.hospital.hvoc } // 수술실 가용 병상/hvoc hpopyn 두개 있음 hv 응급 수술실일 가능성 hp일반 수술실일 가능성
+//            3 -> hospitalDistances.sortedBy { it.hospital.dutyEryn } // 당직의 이름 db 수정 필요 or api 신규 생성필
+//            4 -> hospitalDistances.sortedByDescending { it.hospital.hvamyn } // 구급차 유무 없
+            else -> throw InvalidParameterException()
+        }
+
         val pageable = PageRequest.of(page, size)
-        return hospitalRepository.findAll(pageable)
+        val start = page * size
+        val end = Math.min(start + size, sortedHospitals.size)
+        val pagedHospitals = sortedHospitals.subList(start, end)
+
+        return PageImpl(pagedHospitals, pageable, sortedHospitals.size.toLong())
     }
 
     fun findHospitalAndEmergencyDataByHpid(
