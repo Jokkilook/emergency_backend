@@ -189,7 +189,6 @@ class EmergencyService(
                     filter.any { hospital.dutyName?.contains(it) == true }
                 }
             }
-
             result["emergencyInfo"] = emergencyDataList
         }
 
