@@ -36,10 +36,30 @@ class EmergencyService(
         }
     }
 
-    fun getAllEmergencyHospitalData(page: Int, size: Int): Page<EmergencyHospitalData> {
+    fun getAllEmergencyHospitalData(page: Int, size: Int, sortType: Int): Page<EmergencyHospitalData> {
         val pageable = PageRequest.of(page, size)
-        return emergencyRepository.findAll(pageable)
+        val hospitals = emergencyRepository.findAll(pageable).content
+
+        // 정렬 처리
+        val sortedHospitals: List<EmergencyHospitalData> = when (sortType) {
+            // 병원 이름 순
+            0 -> hospitals.sortedBy { it.dutyName }
+            // 거리 순 (거리 관련 정보를 제거한 후 이름 순 정렬)
+            1 -> hospitals.sortedBy { it.dutyName }
+            // 수술실 가용 병상 순 (기능 추가 필요)
+            2 -> throw InvalidParameterException("Sort type 2 is not implemented.")
+            // 당직의 (기능 추가 필요)
+            3 -> throw InvalidParameterException("Sort type 3 is not implemented.")
+            // 구급차 (기능 추가 필요)
+            4 -> throw InvalidParameterException("Sort type 4 is not implemented.")
+            else -> throw InvalidParameterException("Invalid sort type.")
+        }
+
+        // 정렬된 병원 데이터를 페이지로 반환
+        return PageImpl(sortedHospitals, pageable, sortedHospitals.size.toLong())
     }
+
+
 
     fun searchWithCity(
         stage1: String,

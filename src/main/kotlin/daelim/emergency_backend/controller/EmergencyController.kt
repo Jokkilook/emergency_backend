@@ -31,13 +31,14 @@ class EmergencyController(val emergencyService: EmergencyService) {
     @GetMapping("/getEmergencyHospitalList")
     fun getEmergencyHospitals(
         @RequestParam(defaultValue = "0") page: Int,
-        @RequestParam(defaultValue = "20") size: Int
+        @RequestParam(defaultValue = "20") size: Int,
+        @RequestParam(defaultValue = "0") sortType: Int  // Add sortType parameter
     ): ResponseEntity<Response<Page<EmergencyHospitalData>>?> {
         return try {
             val response = Response(
                 HttpStatus.OK.value(),
                 "success",
-                emergencyService.getAllEmergencyHospitalData(page, size)
+                emergencyService.getAllEmergencyHospitalData(page, size, sortType)  // Pass sortType to the service method
             )
             ResponseEntity.ok(response)
         } catch (e: EmergencyException) {
@@ -46,6 +47,7 @@ class EmergencyController(val emergencyService: EmergencyService) {
             ResponseEntity(response, null, HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
+
 
     @Operation(summary = "시군구 검색으로 병원 정보 리스트 반환", description = "시군구 단계별로 병원 정보를 검색하여 리스트를 반환합니다.")
     @GetMapping("/getHospitalInfoByAddr")
