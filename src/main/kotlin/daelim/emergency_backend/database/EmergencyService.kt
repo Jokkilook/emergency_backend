@@ -41,12 +41,67 @@ class EmergencyService(
         return emergencyRepository.findAll(pageable)
     }
 
-    fun searchWithCity(stage1: String, stage2: String): List<HospitalInformation> {
+    fun searchWithCity(
+        stage1: String,
+        stage2: String,
+        sortType:Int = 0,
+        filter:List<String>?,
+        originLat:Double?,
+        originLon:Double?
+    ): List<HospitalInformationWithDistance> {
+
         val hospitals = hospitalRepository.findByAddress(stage1, stage2)
+
         if (hospitals.isEmpty()) {
             throw DataNotFoundException("주소 ($stage1, $stage2)에 해당하는 병원이 존재하지 않습니다.")
         }
-        return hospitals
+
+        val hospitalDistances: MutableList<HospitalInformationWithDistance> = mutableListOf()
+
+        if(originLat!=null && originLon!=null){
+            hospitals.forEach{ hospital ->
+                val distance = getDistanceWithLonLat(originLat, originLon, hospital.wgs84Lat!!, hospital.wgs84Lon!!)
+                hospitalDistances.add(HospitalInformationWithDistance(hospital.id, hospital, distance))
+            }
+        }else if(originLat ==null &&originLon ==null){
+            hospitals.forEach { hospital ->
+                hospitalDistances.add(HospitalInformationWithDistance(hospital.id, hospital, -1.0))
+            }
+        }else{
+            throw InvalidParameterException()
+        }
+
+        var filteredHospitals = mutableListOf<HospitalInformationWithDistance>()
+
+        if(!filter.isNullOrEmpty()){
+            hospitalDistances.forEach { hospital ->
+                if(filter.any{ hospital.hospital.dgidIdName?.contains(it) == true }){
+                    filteredHospitals.add(hospital)
+                }
+            }
+        } else {
+            filteredHospitals = hospitalDistances
+        }
+
+        val sortedHospitals:List<HospitalInformationWithDistance> = when (sortType) {
+            //병원 이름 순
+            0 -> filteredHospitals.sortedBy { it.hospital.dutyName }
+            //거리순
+            1 -> filteredHospitals.sortedWith(
+                compareBy<HospitalInformationWithDistance> { it.distance } // 첫 번째 기준: 거리 오름차순
+                    .thenBy { it.hospital.dutyName }                       // 두 번째 기준: 이름 오름차순
+                )
+            //수술실 가용 병상 순
+            2 -> throw InvalidParameterException()
+            //당직의
+            3 -> throw InvalidParameterException()
+            //구급차
+            4 -> throw InvalidParameterException()
+            //이외
+            else -> throw InvalidParameterException()
+        }
+
+        return sortedHospitals
     }
 
     fun getHospitalInformationsByPage(
