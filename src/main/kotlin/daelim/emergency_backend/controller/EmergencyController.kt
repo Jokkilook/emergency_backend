@@ -51,14 +51,15 @@ class EmergencyController(val emergencyService: EmergencyService) {
     @GetMapping("/getHospitalInfoByAddr")
     fun getHospitalInfoByAddress(
         @RequestParam stage1:String,
-        @RequestParam stage2:String
-    ): ResponseEntity<Response<List<HospitalInformation>>?>{
-        return try {
-            ResponseEntity(Response(HttpStatus.OK.value(),"success",emergencyService.searchWithCity(stage1, stage2)),null,HttpStatus.OK)
-        } catch (e: EmergencyException) {
-            logger.info(e.message)
-            ResponseEntity(Response(e.errorCode.code,e.message,null),null, HttpStatus.INTERNAL_SERVER_ERROR)
-        }
+        @RequestParam stage2:String,
+        @RequestParam(defaultValue = "0") sortType: Int,
+        @RequestParam(required = false) filter: List<String>?,
+        @RequestParam(required = false) originLat: Double?,
+        @RequestParam(required = false) originLon: Double?,
+    ): ResponseEntity<Response<List<HospitalInformationWithDistance>>>{
+        val data = emergencyService.searchWithCity(stage1, stage2, sortType, filter, originLat, originLon)
+
+        return ResponseEntity(Response(HttpStatus.OK.value(),"success",data),null,HttpStatus.OK)
     }
 
     //hospital information List 반환
