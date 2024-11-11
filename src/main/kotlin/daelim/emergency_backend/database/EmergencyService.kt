@@ -54,10 +54,9 @@ class EmergencyService(
             4 -> throw InvalidParameterException("Sort type 4 is not implemented.")
             else -> throw InvalidParameterException("Invalid sort type.")
         }
-
+        // 정렬된 병원 데이터를 페이지로 반환
         return PageImpl(sortedHospitals, pageable, sortedHospitals.size.toLong())
     }
-
 
     fun searchWithCity(
         stage1: String,
