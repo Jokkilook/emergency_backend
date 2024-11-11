@@ -3,9 +3,11 @@ package daelim.emergency_backend.controller
 import daelim.emergency_backend.database.emergencyHospital.EmergencyHospitalData
 import daelim.emergency_backend.database.EmergencyService
 import daelim.emergency_backend.database.hospitalInformation.HospitalInformation
+import daelim.emergency_backend.database.hospitalInformation.HospitalInformationWithDistance
 import daelim.emergency_backend.exception.DataNotFoundException
 import daelim.emergency_backend.exception.EmergencyException
 import daelim.emergency_backend.exception.ErrorCode
+import daelim.emergency_backend.exception.HospitalNotFoundException
 import daelim.emergency_backend.models.Response
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -25,17 +27,18 @@ class EmergencyController(val emergencyService: EmergencyService) {
     val logger = LoggerFactory.getLogger(EmergencyController::class.java)
 
     //emergency hospital data List 반환
-    @Operation(summary = "응급 병원 리스트 가져오기", description = "응급 병원 데이터를 페이징하여 반환합니다.")
+    @Operation(summary = "응급 병원 리스트 가져오기", description = "응급 병원 데이터를 페이징, 정렬, 필터링하여 반환합니다.")
     @GetMapping("/getEmergencyHospitalList")
     fun getEmergencyHospitals(
         @RequestParam(defaultValue = "0") page: Int,
-        @RequestParam(defaultValue = "20") size: Int
+        @RequestParam(defaultValue = "20") size: Int,
+        @RequestParam(defaultValue = "0") sortType: Int  // Add sortType parameter
     ): ResponseEntity<Response<Page<EmergencyHospitalData>>?> {
         return try {
             val response = Response(
                 HttpStatus.OK.value(),
                 "success",
-                emergencyService.getAllEmergencyHospitalData(page, size)
+                emergencyService.getAllEmergencyHospitalData(page, size, sortType)  // Pass sortType to the service method
             )
             ResponseEntity.ok(response)
         } catch (e: EmergencyException) {
@@ -45,18 +48,20 @@ class EmergencyController(val emergencyService: EmergencyService) {
         }
     }
 
+
     @Operation(summary = "시군구 검색으로 병원 정보 리스트 반환", description = "시군구 단계별로 병원 정보를 검색하여 리스트를 반환합니다.")
     @GetMapping("/getHospitalInfoByAddr")
     fun getHospitalInfoByAddress(
         @RequestParam stage1:String,
-        @RequestParam stage2:String
-    ): ResponseEntity<Response<List<HospitalInformation>>?>{
-        return try {
-            ResponseEntity(Response(HttpStatus.OK.value(),"success",emergencyService.searchWithCity(stage1, stage2)),null,HttpStatus.OK)
-        } catch (e: EmergencyException) {
-            logger.info(e.message)
-            ResponseEntity(Response(e.errorCode.code,e.message,null),null, HttpStatus.INTERNAL_SERVER_ERROR)
-        }
+        @RequestParam stage2:String,
+        @RequestParam(defaultValue = "0") sortType: Int,
+        @RequestParam(required = false) filter: List<String>?,
+        @RequestParam(required = false) originLat: Double?,
+        @RequestParam(required = false) originLon: Double?,
+    ): ResponseEntity<Response<List<HospitalInformationWithDistance>>>{
+        val data = emergencyService.searchWithCity(stage1, stage2, sortType, filter, originLat, originLon)
+
+        return ResponseEntity(Response(HttpStatus.OK.value(),"success",data),null,HttpStatus.OK)
     }
 
     //hospital information List 반환
@@ -64,48 +69,30 @@ class EmergencyController(val emergencyService: EmergencyService) {
     @GetMapping("/getHospitalInfoList")
     fun getHospitalList(
         @RequestParam(defaultValue = "0") page: Int,
-        @RequestParam(defaultValue = "20") size: Int
-    ): ResponseEntity<Response<Page<HospitalInformation>>?> {
-        return try {
-            val response = Response(
-                HttpStatus.OK.value(),
-                "success",
-                emergencyService.getHospitalInformationsByPage(page, size)
-            )
-            ResponseEntity.ok(response)
-        } catch (e: EmergencyException) {
-            logger.error(e.message ?: "Failed error")
-            val response = Response<Page<HospitalInformation>>(e.errorCode.code, e.message, null)
-            ResponseEntity(response, null, HttpStatus.INTERNAL_SERVER_ERROR)
-        }
-    }
-
-    @Operation(summary = "병원 정보와 응급실 정보 반환", description = "hpid로 병원 정보와 응급실 정보를 선택적으로 반환합니다.")
-    @GetMapping("/getEmergencyAndHospitalByHpid/{hpid}")
-    fun getEmergencyAndHospitalByHpid(
-        @PathVariable hpid: String,
-        @RequestParam(required = false, defaultValue = "true") includeHospitalInfo: Boolean,
-        @RequestParam(required = false, defaultValue = "true") includeEmergencyData: Boolean
-    ): ResponseEntity<Response<Map<String, Any?>>?> {
-        var rootResult :Map<String, Any?> = emptyMap()
+        @RequestParam(defaultValue = "20") size: Int,
+        @RequestParam(defaultValue = "0") sortType: Int,
+        @RequestParam(required = false) originLat: Double?,
+        @RequestParam(required = false) originLon: Double?,
+    ): ResponseEntity<Response<Page<HospitalInformationWithDistance>>?> {
+        var rootResult :Page<HospitalInformationWithDistance> =  Page.empty()
         try{
-            val result = emergencyService.findHospitalAndEmergencyDataByHpid(hpid, includeHospitalInfo, includeEmergencyData)
+            val result = emergencyService.getHospitalInformationsByPage(page, size,sortType,originLat,originLon)
+
             rootResult = result
         }catch (
             e:EmergencyException
         ){
 
-            logger.info("getEmergencyAndHospitalByHpid ---- invalid HPID")
-            logger.error(ErrorCode.DATA_NOT_FOUND.code.toString())
-            logger.error(ErrorCode.DATA_NOT_FOUND.message)
-            logger.warn("정확한 hpid를 입력하세요")
-            logger.warn("request valid hpid")
+            logger.info("getHospitalInfoList ---- no more hospital data")
+            logger.error(ErrorCode.HOSPITAL_NOT_FOUND.code.toString())
+            logger.error(ErrorCode.HOSPITAL_NOT_FOUND.message)
+            logger.warn("병원 정보가 없습니다")
+            logger.warn("unable to find hospital data")
         }
-        if(rootResult["hospitalInfo"] == null && rootResult["emergencyInfo"] == null){
+        if(rootResult== null){
 
-            throw DataNotFoundException("invalid HPID")
+            throw HospitalNotFoundException("no more hospital data")
         }
-
 
         val response = Response(
             resultCode = HttpStatus.OK.value(),
@@ -113,6 +100,45 @@ class EmergencyController(val emergencyService: EmergencyService) {
             data = rootResult
         )
         return ResponseEntity.ok(response)
-
     }
+
+    @Operation(summary = "병원 정보와 응급실 정보 반환", description = "hpid로 병원 정보와 응급실 정보를 선택적으로 반환합니다.")
+    @GetMapping("/getEmergencyAndHospitalByHpid/{hpid}")
+    fun getEmergencyAndHospitalByHpid(
+        @PathVariable hpid: String,
+        @RequestParam(required = false, defaultValue = "true") includeHospitalInfo: Boolean,
+        @RequestParam(required = false, defaultValue = "true") includeEmergencyData: Boolean,
+        @RequestParam(defaultValue = "0") sort: Int,
+        @RequestParam(required = false) filter: List<String>?
+    ): ResponseEntity<Response<Map<String, Any?>>?> {
+        return try {
+            val result = emergencyService.findHospitalAndEmergencyDataByHpid(
+                hpid,
+                includeHospitalInfo,
+                includeEmergencyData,
+                sort,
+                filter
+            )
+
+            if (result["hospitalInfo"] == null && result["emergencyInfo"] == null) {
+                throw DataNotFoundException("해당 hpid로 데이터를 찾을 수 없습니다.")
+            }
+
+            val response = Response(
+                HttpStatus.OK.value(),
+                "success",
+                result
+            )
+            ResponseEntity.ok(response)
+        } catch (e: EmergencyException) {
+            logger.error(e.message ?: "Failed error")
+            val response = Response<Map<String, Any?>>(
+                e.errorCode.code,
+                e.message,
+                null
+            )
+            ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+    }
+
 }
