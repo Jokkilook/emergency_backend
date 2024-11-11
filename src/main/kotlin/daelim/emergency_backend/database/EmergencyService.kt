@@ -36,10 +36,28 @@ class EmergencyService(
         }
     }
 
-    fun getAllEmergencyHospitalData(page: Int, size: Int): Page<EmergencyHospitalData> {
+    fun getAllEmergencyHospitalData(page: Int, size: Int, sortType: Int): Page<EmergencyHospitalData> {
         val pageable = PageRequest.of(page, size)
-        return emergencyRepository.findAll(pageable)
+        val hospitals = emergencyRepository.findAll(pageable).content
+
+        // 정렬 처리
+        val sortedHospitals: List<EmergencyHospitalData> = when (sortType) {
+            // 병원 이름 순
+            0 -> hospitals.sortedBy { it.dutyName }
+            // 거리 순 (거리 관련 정보를 제거한 후 이름 순 정렬)
+            1 -> hospitals.sortedBy { it.dutyName }
+            // 수술실 가용 병상 순 (기능 추가 필요)
+            2 -> throw InvalidParameterException("Sort type 2 is not implemented.")
+            // 당직의 (기능 추가 필요)
+            3 -> throw InvalidParameterException("Sort type 3 is not implemented.")
+            // 구급차 (기능 추가 필요)
+            4 -> throw InvalidParameterException("Sort type 4 is not implemented.")
+            else -> throw InvalidParameterException("Invalid sort type.")
+        }
+
+        return PageImpl(sortedHospitals, pageable, sortedHospitals.size.toLong())
     }
+
 
     fun searchWithCity(
         stage1: String,
@@ -149,20 +167,33 @@ class EmergencyService(
     fun findHospitalAndEmergencyDataByHpid(
         hpid: String,
         includeHospitalInfo: Boolean = true,
-        includeEmergencyData: Boolean = true
+        includeEmergencyData: Boolean = true,
+        sort: Int = 0,
+        filter: List<String>? = null
     ): Map<String, Any?> {
-        val hospitalInfo = if (includeHospitalInfo) {
-            hospitalRepository.findByHpid(hpid) ?: throw HospitalNotFoundException("HPID($hpid)에 해당하는 병원 정보가 존재하지 않습니다.")
-        } else {
-            null
+        val result = mutableMapOf<String, Any?>()
+
+        // 병원 정보 조회
+        if (includeHospitalInfo) {
+            val hospitalInfo = hospitalRepository.findByHpid(hpid)
+            result["hospitalInfo"] = hospitalInfo
         }
 
-        val emergencyData = if (includeEmergencyData) {
-            emergencyRepository.findByHpid(hpid) ?: throw EmergencyDataNotFoundException("HPID($hpid)에 해당하는 응급실 정보가 존재하지 않습니다.")
-        } else {
-            null
+        // 응급실 정보 조회
+        if (includeEmergencyData) {
+            val emergencyDataPage = getAllEmergencyHospitalData(0, 20, sort)
+            var emergencyDataList = emergencyDataPage.content
+
+            if (!filter.isNullOrEmpty()) {
+                emergencyDataList = emergencyDataList.filter { hospital ->
+                    filter.any { hospital.dutyName?.contains(it) == true }
+                }
+            }
+            result["emergencyInfo"] = emergencyDataList
         }
 
-        return mapOf("hospitalInfo" to hospitalInfo, "emergencyInfo" to emergencyData)
+        return result
     }
+
+
 }
