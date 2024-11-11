@@ -27,7 +27,7 @@ class EmergencyController(val emergencyService: EmergencyService) {
     val logger = LoggerFactory.getLogger(EmergencyController::class.java)
 
     //emergency hospital data List 반환
-    @Operation(summary = "응급 병원 리스트 가져오기", description = "응급 병원 데이터를 페이징하여 반환합니다.")
+    @Operation(summary = "응급 병원 리스트 가져오기", description = "응급 병원 데이터를 페이징, 정렬, 필터링하여 반환합니다.")
     @GetMapping("/getEmergencyHospitalList")
     fun getEmergencyHospitals(
         @RequestParam(defaultValue = "0") page: Int,
@@ -107,34 +107,38 @@ class EmergencyController(val emergencyService: EmergencyService) {
     fun getEmergencyAndHospitalByHpid(
         @PathVariable hpid: String,
         @RequestParam(required = false, defaultValue = "true") includeHospitalInfo: Boolean,
-        @RequestParam(required = false, defaultValue = "true") includeEmergencyData: Boolean
+        @RequestParam(required = false, defaultValue = "true") includeEmergencyData: Boolean,
+        @RequestParam(defaultValue = "0") sort: Int,
+        @RequestParam(required = false) filter: List<String>?
     ): ResponseEntity<Response<Map<String, Any?>>?> {
-        var rootResult :Map<String, Any?> = emptyMap()
-        try{
-            val result = emergencyService.findHospitalAndEmergencyDataByHpid(hpid, includeHospitalInfo, includeEmergencyData)
-            rootResult = result
-        }catch (
-            e:EmergencyException
-        ){
+        return try {
+            val result = emergencyService.findHospitalAndEmergencyDataByHpid(
+                hpid,
+                includeHospitalInfo,
+                includeEmergencyData,
+                sort,
+                filter
+            )
 
-            logger.info("getEmergencyAndHospitalByHpid ---- invalid HPID")
-            logger.error(ErrorCode.DATA_NOT_FOUND.code.toString())
-            logger.error(ErrorCode.DATA_NOT_FOUND.message)
-            logger.warn("정확한 hpid를 입력하세요")
-            logger.warn("request valid hpid")
+            if (result["hospitalInfo"] == null && result["emergencyInfo"] == null) {
+                throw DataNotFoundException("해당 hpid로 데이터를 찾을 수 없습니다.")
+            }
+
+            val response = Response(
+                HttpStatus.OK.value(),
+                "success",
+                result
+            )
+            ResponseEntity.ok(response)
+        } catch (e: EmergencyException) {
+            logger.error(e.message ?: "Failed error")
+            val response = Response<Map<String, Any?>>(
+                e.errorCode.code,
+                e.message,
+                null
+            )
+            ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR)
         }
-        if(rootResult["hospitalInfo"] == null && rootResult["emergencyInfo"] == null){
-
-            throw DataNotFoundException("invalid HPID")
-        }
-
-
-        val response = Response(
-            resultCode = HttpStatus.OK.value(),
-            message = "success.",
-            data = rootResult
-        )
-        return ResponseEntity.ok(response)
-
     }
+
 }
