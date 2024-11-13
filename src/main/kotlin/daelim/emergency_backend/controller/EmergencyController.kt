@@ -10,6 +10,7 @@ import daelim.emergency_backend.exception.HospitalNotFoundException
 import daelim.emergency_backend.lib.ApiPaths
 import daelim.emergency_backend.lib.SortType
 import daelim.emergency_backend.models.Response
+import daelim.emergency_backend.models.hospital.HospitalInformationDTO
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.slf4j.LoggerFactory
@@ -57,7 +58,7 @@ class EmergencyController(val emergencyService: EmergencyService) {
         @RequestParam(required = false) filter: List<String>?,
         @RequestParam(required = false) originLat: Double?,
         @RequestParam(required = false) originLon: Double?,
-    ): ResponseEntity<Response<List<HospitalInformationWithDistance>>>{
+    ): ResponseEntity<Response<List<HospitalInformationDTO>>>{
         val data = emergencyService.searchWithCity(stage1, stage2, sortType, filter, originLat, originLon)
 
         return ResponseEntity(Response(HttpStatus.OK.value(),"success",data),null,HttpStatus.OK)
