@@ -1,4 +1,4 @@
-package daelim.emergency_backend.Infra.Repositor
+package daelim.emergency_backend.Infra.Repository
 
 import daelim.emergency_backend.Infra.Entity.EmergencyHospitalData
 import org.springframework.data.domain.Page
