@@ -77,6 +77,7 @@ data class EmergencyHospitalDTO(
     val dutyTel3: String?,
     val lastUpdated: Timestamp?
 ) {
+    //hsv01 = 일반 응급실 병상 수 & hvec = 사용가능한 응급실 병상 수
     // EmergencyHospitalData를 받아서 DTO로 변환하는 생성자
     constructor(entity: EmergencyHospitalData) : this(
         id = entity.id,

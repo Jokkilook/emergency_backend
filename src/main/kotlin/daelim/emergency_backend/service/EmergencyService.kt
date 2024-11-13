@@ -9,6 +9,8 @@ import daelim.emergency_backend.exception.DataNotFoundException
 import daelim.emergency_backend.exception.EmergencyDataNotFoundException
 import daelim.emergency_backend.exception.HospitalNotFoundException
 import daelim.emergency_backend.exception.InvalidParameterException
+import daelim.emergency_backend.lib.SortType
+import daelim.emergency_backend.models.hospital.HospitalInformationDTO
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
@@ -61,11 +63,11 @@ class EmergencyService(
     fun searchWithCity(
         stage1: String,
         stage2: String,
-        sortType:Int = 0,
+        sortType:SortType = SortType.NAMEASC,
         filter:List<String>?,
         originLat:Double?,
         originLon:Double?
-    ): List<HospitalInformationWithDistance> {
+    ): List<HospitalInformationDTO> {
 
         val hospitals = hospitalRepository.findByAddress(stage1, stage2)
 
@@ -73,26 +75,26 @@ class EmergencyService(
             throw DataNotFoundException("주소 ($stage1, $stage2)에 해당하는 병원이 존재하지 않습니다.")
         }
 
-        val hospitalDistances: MutableList<HospitalInformationWithDistance> = mutableListOf()
+        val hospitalDistances: MutableList<HospitalInformationDTO> = mutableListOf()
 
         if(originLat!=null && originLon!=null){
             hospitals.forEach{ hospital ->
-                val distance = getDistanceWithLonLat(originLat, originLon, hospital.wgs84Lat!!, hospital.wgs84Lon!!)
-                hospitalDistances.add(HospitalInformationWithDistance(hospital.id, hospital, distance))
+                val distance = getDistanceWithLonLat(originLat, originLon, hospital.wgs84Lat?:0.0, hospital.wgs84Lon?:0.0)
+                hospitalDistances.add(HospitalInformationDTO(hospital, distance))
             }
         }else if(originLat ==null &&originLon ==null){
             hospitals.forEach { hospital ->
-                hospitalDistances.add(HospitalInformationWithDistance(hospital.id, hospital, -1.0))
+                hospitalDistances.add(HospitalInformationDTO(hospital, -1.0))
             }
         }else{
             throw InvalidParameterException()
         }
 
-        var filteredHospitals = mutableListOf<HospitalInformationWithDistance>()
+        var filteredHospitals = mutableListOf<HospitalInformationDTO>()
 
         if(!filter.isNullOrEmpty()){
             hospitalDistances.forEach { hospital ->
-                if(filter.any{ hospital.hospital.dgidIdName?.contains(it) == true }){
+                if(filter.any{ hospital.dgidIdName?.contains(it) == true }){
                     filteredHospitals.add(hospital)
                 }
             }
@@ -100,22 +102,33 @@ class EmergencyService(
             filteredHospitals = hospitalDistances
         }
 
-        val sortedHospitals:List<HospitalInformationWithDistance> = when (sortType) {
-            //병원 이름 순
-            0 -> filteredHospitals.sortedBy { it.hospital.dutyName }
-            //거리순
-            1 -> filteredHospitals.sortedWith(
-                compareBy<HospitalInformationWithDistance> { it.distance } // 첫 번째 기준: 거리 오름차순
-                    .thenBy { it.hospital.dutyName }                       // 두 번째 기준: 이름 오름차순
-                )
-            //수술실 가용 병상 순
-            2 -> throw InvalidParameterException()
-            //당직의
-            3 -> throw InvalidParameterException()
+        val sortedHospitals:List<HospitalInformationDTO> = when (sortType) {
+            //병원 이름 오름차순
+            SortType.NAMEASC -> filteredHospitals.sortedBy { it.dutyName }
+            //병원 이름 내림차순
+            SortType.NAMEDESC -> filteredHospitals.sortedByDescending { it.dutyName }
+            //거리순 오름차순
+            SortType.DISTANCEASC -> filteredHospitals.sortedWith(
+                compareBy<HospitalInformationDTO> { it.distance } // 첫 번째 기준: 거리 오름차순
+                    .thenBy { it.dutyName }                       // 두 번째 기준: 이름 오름차순
+            )
+            //거리순 내림차순
+            SortType.DISTANCEDESC -> filteredHospitals.sortedWith(
+                compareByDescending<HospitalInformationDTO> { it.distance } // 첫 번째 기준: 거리 내림차순
+                    .thenBy { it.dutyName }                                 // 두 번째 기준: 이름 오름차순
+            )
+            //수술실 가용 병상 오름차순
+            SortType.OPERROOMASC -> throw InvalidParameterException("This api has no OPERROOMASC option.")
+            //수술실 가용 병상 내림차순
+            SortType.OPERROOMDESC -> throw InvalidParameterException("This api has no OPERROOMDESC option.")
+            //당직의 이름 오름차순
+            SortType.DOCNAMEASC -> throw InvalidParameterException("This api has no DOCNAMEASC option.")
+            //당직의 이름 내림차순
+            SortType.DOCNAMEDESC -> throw InvalidParameterException("This api has no DOCNAMEDESC option.")
             //구급차
-            4 -> throw InvalidParameterException()
+            SortType.AMBULANCE -> throw InvalidParameterException("This api has no AMBULANCE option.")
             //이외
-            else -> throw InvalidParameterException()
+            else -> throw InvalidParameterException("There is no such sort type.")
         }
 
         return sortedHospitals
