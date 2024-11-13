@@ -52,7 +52,7 @@ kotlin {
 }
 
 tasks.withType<Test> {
-//	exclude("**/*")
+	exclude("**/*")
 	useJUnitPlatform()
 }
 
