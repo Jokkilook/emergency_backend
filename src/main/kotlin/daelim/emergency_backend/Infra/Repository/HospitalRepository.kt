@@ -1,4 +1,4 @@
-package daelim.emergency_backend.database.hospitalInformation
+package daelim.emergency_backend.Infra.Repository
 
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query

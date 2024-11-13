@@ -1,8 +1,7 @@
 package daelim.emergency_backend.test
 
-import daelim.emergency_backend.database.emergencyHospital.EmergencyHospitalData
-import daelim.emergency_backend.database.EmergencyService
-import daelim.emergency_backend.database.hospitalInformation.HospitalInformation
+import daelim.emergency_backend.Infra.Entity.HospitalInformation
+import daelim.emergency_backend.Service.EmergencyService
 import daelim.emergency_backend.models.AvailavleBedInfo.AvailableBedInfoResult
 import daelim.emergency_backend.models.EmergencyAndSevereCaseMessage.EmergencyAndSevereCaseMessageResult
 import daelim.emergency_backend.models.EmergencyMedicalInstitutionBasicInfoResult

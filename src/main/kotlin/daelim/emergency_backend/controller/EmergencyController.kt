@@ -1,9 +1,9 @@
 package daelim.emergency_backend.controller
 
-import daelim.emergency_backend.database.emergencyHospital.EmergencyHospitalData
-import daelim.emergency_backend.database.EmergencyService
-import daelim.emergency_backend.database.hospitalInformation.HospitalInformation
-import daelim.emergency_backend.database.hospitalInformation.HospitalInformationWithDistance
+import daelim.emergency_backend.Service.emergencyHospital.EmergencyHospitalData
+import daelim.emergency_backend.Service.EmergencyService
+import daelim.emergency_backend.Service.hospitalInformation.HospitalInformation
+import daelim.emergency_backend.Service.hospitalInformation.HospitalInformationWithDistance
 import daelim.emergency_backend.exception.DataNotFoundException
 import daelim.emergency_backend.exception.EmergencyException
 import daelim.emergency_backend.exception.ErrorCode
