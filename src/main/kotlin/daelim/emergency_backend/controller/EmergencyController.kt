@@ -8,6 +8,7 @@ import daelim.emergency_backend.exception.EmergencyException
 import daelim.emergency_backend.exception.ErrorCode
 import daelim.emergency_backend.exception.HospitalNotFoundException
 import daelim.emergency_backend.lib.ApiPaths
+import daelim.emergency_backend.lib.SortType
 import daelim.emergency_backend.models.Response
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -52,7 +53,7 @@ class EmergencyController(val emergencyService: EmergencyService) {
     fun getHospitalInfoByAddress(
         @RequestParam stage1:String,
         @RequestParam stage2:String,
-        @RequestParam(defaultValue = "0") sortType: Int,
+        @RequestParam(defaultValue = "0") sortType: SortType,
         @RequestParam(required = false) filter: List<String>?,
         @RequestParam(required = false) originLat: Double?,
         @RequestParam(required = false) originLon: Double?,

@@ -9,6 +9,7 @@ import daelim.emergency_backend.exception.DataNotFoundException
 import daelim.emergency_backend.exception.EmergencyDataNotFoundException
 import daelim.emergency_backend.exception.HospitalNotFoundException
 import daelim.emergency_backend.exception.InvalidParameterException
+import daelim.emergency_backend.lib.SortType
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
@@ -61,7 +62,7 @@ class EmergencyService(
     fun searchWithCity(
         stage1: String,
         stage2: String,
-        sortType:Int = 0,
+        sortType:SortType = SortType.NAMEASC,
         filter:List<String>?,
         originLat:Double?,
         originLon:Double?
@@ -102,18 +103,17 @@ class EmergencyService(
 
         val sortedHospitals:List<HospitalInformationWithDistance> = when (sortType) {
             //병원 이름 순
-            0 -> filteredHospitals.sortedBy { it.hospital.dutyName }
+            SortType.NAMEASC -> filteredHospitals.sortedBy { it.hospital.dutyName }
             //거리순
-            1 -> filteredHospitals.sortedWith(
+            SortType.NAMEDESC -> filteredHospitals.sortedWith(
                 compareBy<HospitalInformationWithDistance> { it.distance } // 첫 번째 기준: 거리 오름차순
                     .thenBy { it.hospital.dutyName }                       // 두 번째 기준: 이름 오름차순
                 )
             //수술실 가용 병상 순
-            2 -> throw InvalidParameterException()
+            SortType.DISTANCEASC -> throw InvalidParameterException()
             //당직의
-            3 -> throw InvalidParameterException()
+            SortType.DISTANCEDESC -> throw InvalidParameterException()
             //구급차
-            4 -> throw InvalidParameterException()
             //이외
             else -> throw InvalidParameterException()
         }
