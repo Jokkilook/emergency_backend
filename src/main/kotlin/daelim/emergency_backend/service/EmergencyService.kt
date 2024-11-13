@@ -79,7 +79,7 @@ class EmergencyService(
 
         if(originLat!=null && originLon!=null){
             hospitals.forEach{ hospital ->
-                val distance = getDistanceWithLonLat(originLat, originLon, hospital.wgs84Lat!!, hospital.wgs84Lon!!)
+                val distance = getDistanceWithLonLat(originLat, originLon, hospital.wgs84Lat?:0.0, hospital.wgs84Lon?:0.0)
                 hospitalDistances.add(HospitalInformationDTO(hospital, distance))
             }
         }else if(originLat ==null &&originLon ==null){

@@ -68,11 +68,12 @@ data class HospitalInformationDTO(
     val hpnicuyn: Int? = null,
     val hpopyn: Int? = null,
     val lastUpdated: Timestamp? = null,
-    val distance: Double? = null
+    val distance: Double? = null,
+    var hospitalAvailable: Boolean? = null
 ) {
     constructor(entity:HospitalInformation, distance: Double? = 0.0) : this(
         id = entity.id,
-        resultCode = entity.resultCode,
+        resultCode = entity.resultCode?:"",
         resultMag = entity.resultMag,
         items = entity.items,
         hpid = entity.hpid,
@@ -134,6 +135,9 @@ data class HospitalInformationDTO(
         hpnicuyn = entity.hpnicuyn,
         hpopyn = entity.hpopyn,
         lastUpdated = entity.lastUpdated,
-        distance = distance
-    )
+        distance = distance,
+    ){
+        hospitalAvailable = if((hvec?:0).toDouble()/(hperyn?:0).toDouble() > 0.7) false else true
+        //hvec = 사용가능한 응급실 병상수 & hperyn = 총 응급실 병상 수
+    }
 }
