@@ -14,7 +14,7 @@ object ApiPaths {
     const val EMERGENCY_LIST = "$APP/emergencyList"
     const val HOSPITAL_LIST_ADDRESS = "$APP/hospitalListByAddr"
 }
-enum class Sort {
+enum class SortType {
     NAMEASC,
     NAMEDESC,
     DISTANCEASC,
