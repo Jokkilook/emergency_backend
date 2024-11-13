@@ -9,6 +9,9 @@ object ApiPaths {
     private const val COMMON = "/common"
     const val ERROR = "$COMMON/error"
 
-    private  const val APP = "/app"
-    const val HOSPITAL = "$APP/getEmergencyHospitalList"
+    private const val VERSION = "v1"
+
+    private  const val APP = "$VERSION/app"
+    const val HOSPITAL = "$APP/hospital"
 }
+
