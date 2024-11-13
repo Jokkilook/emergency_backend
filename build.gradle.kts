@@ -1,5 +1,4 @@
 import com.google.api.client.util.Value
-import org.gradle.initialization.Environment
 
 plugins {
 	kotlin("jvm") version "1.9.25"
@@ -16,6 +15,7 @@ java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(17)
 	}
+
 }
 
 repositories {
@@ -44,6 +44,7 @@ dependencies {
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
+
 kotlin {
 	compilerOptions {
 		freeCompilerArgs.addAll("-Xjsr305=strict")
@@ -51,16 +52,19 @@ kotlin {
 }
 
 tasks.withType<Test> {
+//	exclude("**/*")
 	useJUnitPlatform()
 }
 
 
 jib {
-	val activeProfile = System.getProperty("service.profile.active") ?: "prod"
-
-
-	println("current active profile : ${activeProfile} ")
-	if(activeProfile != "prod") {
+	val activeProfile = System.getProperty("service.profile.active")
+//////	val activeProfile = System.getenv("")
+////	println("current active profile : ${activeProfile} ")
+//
+//
+	println("Current active profile: $activeProfile")
+	if(activeProfile !="prod") {
 		to {
 			image = "docker-repo.minq.work/emergency-backend:latest"  // Docker 이미지 경로
 			auth {
@@ -69,4 +73,13 @@ jib {
 			}
 		}
 	}
+}
+tasks.named<org.springframework.boot.gradle.tasks.run.BootRun>("bootRun") {
+
+	var activeProfile = System.getProperty("service.profile.active")
+	if(activeProfile ==null){
+		activeProfile = "dev"
+	}
+	systemProperty ("spring.profiles.active", activeProfile)
+//	systemProperty("spring.profiles.active", System.getProperty("spring.profiles.active") ?: "default")
 }

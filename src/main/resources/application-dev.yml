@@ -1,10 +1,37 @@
 spring:
+  profiles :
+    active :
+      on-profile: "dev"
+  application:
+    name: emergency_backend
+  jpa:
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
   config:
     import: optional:file:.env[.properties]
 
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    #데이터베이스 주소
     url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+
+
+server:
+  port: 8080
+
+
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+
+logging:
+  level:
+    root: INFO
+    daelim:
+      emergency_backend: INFO
