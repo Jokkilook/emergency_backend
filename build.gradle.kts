@@ -56,6 +56,7 @@ tasks.withType<Test> {
 jib {
 	val activeProfile = System.getProperty("service.profile.active")
 	if(activeProfile != "prod") {
+		println("current active profile : ${activeProfile} ")
 		to {
 			image = "docker-repo.minq.work/emergency-backend:latest"  // Docker 이미지 경로
 			auth {
