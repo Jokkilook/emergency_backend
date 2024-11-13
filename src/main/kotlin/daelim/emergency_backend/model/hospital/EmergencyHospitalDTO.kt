@@ -1,4 +1,4 @@
-package daelim.emergency_backend.service
+package daelim.emergency_backend.model.hospital
 
 import daelim.emergency_backend.infra.entity.EmergencyHospitalData
 import java.sql.Timestamp

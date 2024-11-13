@@ -1,6 +1,5 @@
 package daelim.emergency_backend.controller
 
-import daelim.emergency_backend.infra.entity.EmergencyHospitalData
 import daelim.emergency_backend.service.EmergencyService
 import daelim.emergency_backend.infra.entity.HospitalInformationWithDistance
 import daelim.emergency_backend.exception.DataNotFoundException
@@ -9,7 +8,7 @@ import daelim.emergency_backend.exception.ErrorCode
 import daelim.emergency_backend.exception.HospitalNotFoundException
 import daelim.emergency_backend.lib.ApiPaths
 import daelim.emergency_backend.model.datagokr.Response
-import daelim.emergency_backend.service.EmergencyHospitalDTO
+import daelim.emergency_backend.model.hospital.EmergencyHospitalDTO
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.slf4j.LoggerFactory

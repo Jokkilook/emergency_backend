@@ -4,19 +4,16 @@ import daelim.emergency_backend.infra.entity.EmergencyHospitalData
 import daelim.emergency_backend.infra.entity.HospitalInformationWithDistance
 import daelim.emergency_backend.infra.entity.HospitalInformation
 import daelim.emergency_backend.exception.DataNotFoundException
-import daelim.emergency_backend.exception.EmergencyException
 import daelim.emergency_backend.exception.HospitalNotFoundException
 import daelim.emergency_backend.exception.InvalidParameterException
 import daelim.emergency_backend.infra.repository.EmergencyRepository
 import daelim.emergency_backend.infra.repository.HospitalRepository
-import daelim.emergency_backend.model.datagokr.Response
+import daelim.emergency_backend.model.hospital.EmergencyHospitalDTO
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import utils.EmergencyUtils.Companion.getDistanceWithLonLat
 
