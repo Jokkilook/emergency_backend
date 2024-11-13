@@ -1,19 +1,22 @@
-package daelim.emergency_backend.database
+package daelim.emergency_backend.service
 
-import daelim.emergency_backend.database.emergencyHospital.EmergencyHospitalData
-import daelim.emergency_backend.database.emergencyHospital.EmergencyRepository
-import daelim.emergency_backend.database.hospitalInformation.HospitalInformationWithDistance
-import daelim.emergency_backend.database.hospitalInformation.HospitalInformation
-import daelim.emergency_backend.database.hospitalInformation.HospitalRepository
+import daelim.emergency_backend.infra.entity.EmergencyHospitalData
+import daelim.emergency_backend.infra.entity.HospitalInformationWithDistance
+import daelim.emergency_backend.infra.entity.HospitalInformation
 import daelim.emergency_backend.exception.DataNotFoundException
-import daelim.emergency_backend.exception.EmergencyDataNotFoundException
+import daelim.emergency_backend.exception.EmergencyException
 import daelim.emergency_backend.exception.HospitalNotFoundException
 import daelim.emergency_backend.exception.InvalidParameterException
+import daelim.emergency_backend.infra.repository.EmergencyRepository
+import daelim.emergency_backend.infra.repository.HospitalRepository
+import daelim.emergency_backend.model.datagokr.Response
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import utils.EmergencyUtils.Companion.getDistanceWithLonLat
 
@@ -36,26 +39,26 @@ class EmergencyService(
         }
     }
 
-    fun getAllEmergencyHospitalData(page: Int, size: Int, sortType: Int): Page<EmergencyHospitalData> {
-        val pageable = PageRequest.of(page, size)
-        val hospitals = emergencyRepository.findAll(pageable).content
-
-        // 정렬 처리
-        val sortedHospitals: List<EmergencyHospitalData> = when (sortType) {
-            // 병원 이름 순
-            0 -> hospitals.sortedBy { it.dutyName }
-            // 거리 순 (거리 관련 정보를 제거한 후 이름 순 정렬)
-            1 -> hospitals.sortedBy { it.dutyName }
-            // 수술실 가용 병상 순 (기능 추가 필요)
+    fun getAllEmergencyHospitalData(page: Int, size: Int, sortType: Int): Page<EmergencyHospitalDTO> {
+        val sortes = when(sortType){
+            0 -> Sort.by(Sort.Order.asc("dutyName"))
+            1 -> Sort.by(Sort.Order.desc("dutyName"))
             2 -> throw InvalidParameterException("Sort type 2 is not implemented.")
-            // 당직의 (기능 추가 필요)
             3 -> throw InvalidParameterException("Sort type 3 is not implemented.")
-            // 구급차 (기능 추가 필요)
             4 -> throw InvalidParameterException("Sort type 4 is not implemented.")
             else -> throw InvalidParameterException("Invalid sort type.")
         }
-        // 정렬된 병원 데이터를 페이지로 반환
-        return PageImpl(sortedHospitals, pageable, sortedHospitals.size.toLong())
+        val pageable = PageRequest.of(page, size, sortes)
+        val hospitals = try {
+            emergencyRepository.findAll(pageable)
+        } catch (e: Exception) {
+            throw DataNotFoundException("응급실 데이터가 존재하지 않습니다.")
+        }
+        // 각 EmergencyHospitalData를 EmergencyHospitalDTO로 변환
+        val dtoList = hospitals.content.map { hospital ->
+            EmergencyHospitalDTO(hospital)
+        }
+        return PageImpl(dtoList, pageable, hospitals.totalElements)
     }
 
     fun searchWithCity(
@@ -185,7 +188,7 @@ class EmergencyService(
 
             if (!filter.isNullOrEmpty()) {
                 emergencyDataList = emergencyDataList.filter { hospital ->
-                    filter.any { hospital.dutyName?.contains(it) == true }
+                    filter.any { hospital?.dutyName?.contains(it) == true }
                 }
             }
             result["emergencyInfo"] = emergencyDataList

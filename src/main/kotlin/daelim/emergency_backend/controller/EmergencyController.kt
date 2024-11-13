@@ -1,14 +1,15 @@
 package daelim.emergency_backend.controller
 
-import daelim.emergency_backend.database.emergencyHospital.EmergencyHospitalData
-import daelim.emergency_backend.database.EmergencyService
-import daelim.emergency_backend.database.hospitalInformation.HospitalInformation
-import daelim.emergency_backend.database.hospitalInformation.HospitalInformationWithDistance
+import daelim.emergency_backend.infra.entity.EmergencyHospitalData
+import daelim.emergency_backend.service.EmergencyService
+import daelim.emergency_backend.infra.entity.HospitalInformationWithDistance
 import daelim.emergency_backend.exception.DataNotFoundException
 import daelim.emergency_backend.exception.EmergencyException
 import daelim.emergency_backend.exception.ErrorCode
 import daelim.emergency_backend.exception.HospitalNotFoundException
-import daelim.emergency_backend.models.Response
+import daelim.emergency_backend.lib.ApiPaths
+import daelim.emergency_backend.model.datagokr.Response
+import daelim.emergency_backend.service.EmergencyHospitalDTO
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.slf4j.LoggerFactory
@@ -19,7 +20,6 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import java.lang.Exception
 
 @Tag(name = "Emergency API", description = "응급실, 병원 정보 반환 API")
 @RestController
@@ -28,24 +28,19 @@ class EmergencyController(val emergencyService: EmergencyService) {
 
     //emergency hospital data List 반환
     @Operation(summary = "응급 병원 리스트 가져오기", description = "응급 병원 데이터를 페이징, 정렬, 필터링하여 반환합니다.")
-    @GetMapping("/getEmergencyHospitalList")
+    @GetMapping(ApiPaths.HOSPITAL)
     fun getEmergencyHospitals(
         @RequestParam(defaultValue = "0") page: Int,
         @RequestParam(defaultValue = "20") size: Int,
         @RequestParam(defaultValue = "0") sortType: Int  // Add sortType parameter
-    ): ResponseEntity<Response<Page<EmergencyHospitalData>>?> {
-        return try {
-            val response = Response(
+    ): ResponseEntity<Response<Page<EmergencyHospitalDTO>>> {
+        return ResponseEntity.ok(
+            Response(
                 HttpStatus.OK.value(),
                 "success",
-                emergencyService.getAllEmergencyHospitalData(page, size, sortType)  // Pass sortType to the service method
+                emergencyService.getAllEmergencyHospitalData(page, size, sortType)
             )
-            ResponseEntity.ok(response)
-        } catch (e: EmergencyException) {
-            logger.error(e.message ?: "Failed error")
-            val response = Response<Page<EmergencyHospitalData>>(e.errorCode.code, e.message, null)
-            ResponseEntity(response, null, HttpStatus.INTERNAL_SERVER_ERROR)
-        }
+        )
     }
 
 

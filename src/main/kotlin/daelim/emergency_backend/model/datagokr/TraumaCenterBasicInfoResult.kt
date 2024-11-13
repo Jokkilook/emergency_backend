@@ -1,4 +1,4 @@
-package daelim.emergency_backend.models.TraumaCenterBasicInfo
+package daelim.emergency_backend.model.datagokr
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonRootName
@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import daelim.emergency_backend.models.AvailavleBedInfo.Header
 
 @JsonRootName("response")
 data class TraumaCenterBasicInfoResult(

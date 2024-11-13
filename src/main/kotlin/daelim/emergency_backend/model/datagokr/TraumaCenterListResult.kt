@@ -1,4 +1,4 @@
-package daelim.emergency_backend.models
+package daelim.emergency_backend.model.datagokr
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonRootName
@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import daelim.emergency_backend.models.AvailavleBedInfo.Header
 
 //6. 외상센터 목록정보
 
@@ -15,16 +14,16 @@ import daelim.emergency_backend.models.AvailavleBedInfo.Header
 @JsonRootName("response")
 data class TraumaCenterListResult(
     @set:JsonProperty("header")
-    var header:Header?,
+    var header: Header?,
 
     @set:JsonProperty("body")
-    var body:TraumaCenterListResultBody?,
+    var body: TraumaCenterListResultBody?,
 )
 
 @JsonRootName("body")
 data class TraumaCenterListResultBody(
     @set:JsonProperty("items")
-    var items:TraumaCenterListResultItems?,
+    var items: TraumaCenterListResultItems?,
 
     @set:JsonProperty("numOfRows")//한 페이지 결과수
     var numOfRows:Int?,

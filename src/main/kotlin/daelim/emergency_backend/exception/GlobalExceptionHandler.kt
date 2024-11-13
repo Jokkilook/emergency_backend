@@ -1,7 +1,7 @@
 package daelim.emergency_backend.exception
 
 import daelim.emergency_backend.controller.EmergencyController
-import daelim.emergency_backend.models.Response
+import daelim.emergency_backend.model.datagokr.Response
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity

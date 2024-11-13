@@ -1,22 +1,11 @@
 package daelim.emergency_backend.test
 
-import daelim.emergency_backend.database.emergencyHospital.EmergencyHospitalData
-import daelim.emergency_backend.database.EmergencyService
-import daelim.emergency_backend.database.hospitalInformation.HospitalInformation
-import daelim.emergency_backend.models.AvailavleBedInfo.AvailableBedInfoResult
-import daelim.emergency_backend.models.EmergencyAndSevereCaseMessage.EmergencyAndSevereCaseMessageResult
-import daelim.emergency_backend.models.EmergencyMedicalInstitutionBasicInfoResult
-import daelim.emergency_backend.models.EmergencyMedicalInstitutionInfo.EmergencyMedicalInstitutionInfoResult
-import daelim.emergency_backend.models.EmergencyMedicalInstitutionLocationResult
-import daelim.emergency_backend.models.Response
-import daelim.emergency_backend.models.SevereCaseAcceptanceInfo.SevereCaseAcceptanceInfoResult
-import daelim.emergency_backend.models.TraumaCenterBasicInfo.TraumaCenterBasicInfoResult
-import daelim.emergency_backend.models.TraumaCenterListResult
-import daelim.emergency_backend.models.TraumaCenterLocation.TraumaCenterLocationResult
-import io.swagger.v3.oas.annotations.Operation
+import daelim.emergency_backend.service.EmergencyService
+import daelim.emergency_backend.infra.entity.HospitalInformation
+import daelim.emergency_backend.model.datagokr.AvailableBedInfoResult
+import daelim.emergency_backend.model.datagokr.Response
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.slf4j.LoggerFactory
-import org.springframework.data.domain.Page
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -24,7 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import utils.EmergencyUtils
-import java.lang.Exception
+
 @Tag(name = "Test API", description = "테스트 API")
 @RestController
 class TestController(val testService: TestService, val emergencyService: EmergencyService) {
@@ -60,7 +49,7 @@ class TestController(val testService: TestService, val emergencyService: Emergen
     }
 
     @GetMapping("/getHospitalList")
-    fun getHostipalList():AvailableBedInfoResult {
+    fun getHostipalList(): AvailableBedInfoResult {
 
         return AvailableBedInfoResult(header = null, body = null)
     }

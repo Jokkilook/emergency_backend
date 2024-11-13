@@ -1,10 +1,9 @@
-package daelim.emergency_backend.WebClient
+package daelim.emergency_backend.config
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.util.DefaultUriBuilderFactory
-import java.net.http.HttpHeaders
 
 @Configuration
 class WebClientConfig {
