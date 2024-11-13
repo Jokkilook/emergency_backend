@@ -117,9 +117,16 @@ class EmergencyService(
                 compareByDescending<HospitalInformationDTO> { it.distance } // 첫 번째 기준: 거리 내림차순
                     .thenBy { it.dutyName }                                 // 두 번째 기준: 이름 오름차순
             )
-            //수술실 가용 병상 순
-            //당직의
+            //수술실 가용 병상 오름차순
+            SortType.OPERROOMASC -> throw InvalidParameterException("This api has no OPERROOMASC option.")
+            //수술실 가용 병상 내림차순
+            SortType.OPERROOMDESC -> throw InvalidParameterException("This api has no OPERROOMDESC option.")
+            //당직의 이름 오름차순
+            SortType.DOCNAMEASC -> throw InvalidParameterException("This api has no DOCNAMEASC option.")
+            //당직의 이름 내림차순
+            SortType.DOCNAMEDESC -> throw InvalidParameterException("This api has no DOCNAMEDESC option.")
             //구급차
+            SortType.AMBULANCE -> throw InvalidParameterException("This api has no AMBULANCE option.")
             //이외
             else -> throw InvalidParameterException("There is no such sort type.")
         }

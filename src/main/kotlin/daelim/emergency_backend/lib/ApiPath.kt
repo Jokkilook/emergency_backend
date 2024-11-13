@@ -19,5 +19,9 @@ enum class SortType {
     NAMEDESC,
     DISTANCEASC,
     DISTANCEDESC,
-
+    OPERROOMASC,
+    OPERROOMDESC,
+    DOCNAMEASC,
+    DOCNAMEDESC,
+    AMBULANCE
 }
