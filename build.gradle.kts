@@ -1,3 +1,4 @@
+import com.google.api.client.util.Value
 import org.gradle.initialization.Environment
 
 plugins {
@@ -53,8 +54,12 @@ tasks.withType<Test> {
 	useJUnitPlatform()
 }
 
+
 jib {
-	val activeProfile = System.getProperty("service.profile.active")
+	val activeProfile = System.getProperty("service.profile.active") ?: "prod"
+
+
+	println("current active profile : ${activeProfile} ")
 	if(activeProfile != "prod") {
 		to {
 			image = "docker-repo.minq.work/emergency-backend:latest"  // Docker 이미지 경로
