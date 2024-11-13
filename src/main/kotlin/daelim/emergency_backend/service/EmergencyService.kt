@@ -15,7 +15,7 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
-import utils.EmergencyUtils.Companion.getDistanceWithLonLat
+import daelim.emergency_backend.utils.EmergencyUtils.Companion.getDistanceWithLonLat
 
 @Service
 class EmergencyService(

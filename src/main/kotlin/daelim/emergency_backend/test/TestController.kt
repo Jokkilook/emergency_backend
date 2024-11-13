@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import utils.EmergencyUtils
+import daelim.emergency_backend.utils.EmergencyUtils
 
 @Tag(name = "Test API", description = "테스트 API")
 @RestController
