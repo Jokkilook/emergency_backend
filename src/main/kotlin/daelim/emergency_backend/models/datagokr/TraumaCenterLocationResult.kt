@@ -1,4 +1,4 @@
-package daelim.emergency_backend.models.TraumaCenterLocation
+package daelim.emergency_backend.models.datagokr
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonRootName
@@ -8,23 +8,21 @@ import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import daelim.emergency_backend.models.AvailavleBedInfo.Header
-import daelim.emergency_backend.models.TraumaCenterListResult
 
 @JsonRootName("response")
 data class TraumaCenterLocationResult(
     @set:JsonProperty("header")
-    var header:Header?,
+    var header: Header?,
 
     @set:JsonProperty("body")
-    var body:TraumaCenterLocationBody?
+    var body: TraumaCenterLocationBody?
 )
 
 @JsonRootName("body")
 data class TraumaCenterLocationBody(
     @JacksonXmlElementWrapper(useWrapping = false, localName = "items")
     @set:JsonProperty("items")
-    var items:TraumaCenterLocationItems?,
+    var items: TraumaCenterLocationItems?,
 
     @set:JsonProperty("numOfRows")
     var numOfRows:String?,

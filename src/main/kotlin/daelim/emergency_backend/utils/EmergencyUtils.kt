@@ -1,4 +1,4 @@
-package utils
+package daelim.emergency_backend.utils
 
 import daelim.emergency_backend.exception.InvalidCoordinatesParameterException
 import kotlin.math.*

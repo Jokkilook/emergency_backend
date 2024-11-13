@@ -1,10 +1,10 @@
-package daelim.emergency_backend.database
+package daelim.emergency_backend.Service
 
-import daelim.emergency_backend.database.emergencyHospital.EmergencyHospitalData
-import daelim.emergency_backend.database.emergencyHospital.EmergencyRepository
-import daelim.emergency_backend.database.hospitalInformation.HospitalInformationWithDistance
-import daelim.emergency_backend.database.hospitalInformation.HospitalInformation
-import daelim.emergency_backend.database.hospitalInformation.HospitalRepository
+import daelim.emergency_backend.Service.emergencyHospital.EmergencyHospitalData
+import daelim.emergency_backend.Service.emergencyHospital.EmergencyRepository
+import daelim.emergency_backend.Service.hospitalInformation.HospitalInformationWithDistance
+import daelim.emergency_backend.Service.hospitalInformation.HospitalInformation
+import daelim.emergency_backend.Service.hospitalInformation.HospitalRepository
 import daelim.emergency_backend.exception.DataNotFoundException
 import daelim.emergency_backend.exception.EmergencyDataNotFoundException
 import daelim.emergency_backend.exception.HospitalNotFoundException
@@ -15,7 +15,7 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
-import utils.EmergencyUtils.Companion.getDistanceWithLonLat
+import daelim.emergency_backend.utils.EmergencyUtils.Companion.getDistanceWithLonLat
 
 @Service
 class EmergencyService(

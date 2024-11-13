@@ -1,4 +1,4 @@
-package daelim.emergency_backend.database.emergencyHospital
+package daelim.emergency_backend.Infra.Repository
 
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable

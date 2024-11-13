@@ -1,4 +1,4 @@
-package daelim.emergency_backend.models.AvailavleBedInfo
+package daelim.emergency_backend.models.datagokr
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonRootName
@@ -58,10 +58,10 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 data class AvailableBedInfoResult(
 
     @set:JsonProperty("header")
-    var header:Header?,
+    var header: Header?,
 
     @set:JsonProperty("body")
-    var body:AvailableBedInfoBody?,
+    var body: AvailableBedInfoBody?,
 )
 
 @JsonRootName("Header")
@@ -77,7 +77,7 @@ data class AvailableBedInfoBody(
 
     @JacksonXmlElementWrapper(useWrapping = false, localName = "items")
     @set:JsonProperty("items")
-    var items:AvailableBedInfoItems?,
+    var items: AvailableBedInfoItems?,
     @set:JsonProperty("numOfRows")
     var numOfRows:String?,
     @set:JsonProperty("pageNo")

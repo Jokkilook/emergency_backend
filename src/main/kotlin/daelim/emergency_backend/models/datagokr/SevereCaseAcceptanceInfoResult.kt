@@ -1,4 +1,4 @@
-package daelim.emergency_backend.models.SevereCaseAcceptanceInfo
+package daelim.emergency_backend.models.datagokr
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonRootName
@@ -8,14 +8,13 @@ import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import daelim.emergency_backend.models.AvailavleBedInfo.Header
 
 @JsonRootName("response")
 data class SevereCaseAcceptanceInfoResult(
     @JsonProperty("header")
-    var header:Header?,
+    var header: Header?,
     @JsonProperty("body")
-    var body:SevereCaseAcceptanceInfoBody?
+    var body: SevereCaseAcceptanceInfoBody?
 
 )
 
