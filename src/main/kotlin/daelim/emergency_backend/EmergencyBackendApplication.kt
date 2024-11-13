@@ -5,7 +5,6 @@ import org.springframework.boot.runApplication
 
 @SpringBootApplication
 class EmergencyBackendApplication
-
 fun main(args: Array<String>) {
 	runApplication<EmergencyBackendApplication>(*args)
 }

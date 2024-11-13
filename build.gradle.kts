@@ -1,5 +1,3 @@
-import com.google.api.client.util.Value
-
 plugins {
 	kotlin("jvm") version "1.9.25"
 	kotlin("plugin.spring") version "1.9.25"
@@ -58,10 +56,9 @@ tasks.withType<Test> {
 
 
 jib {
-	val activeProfile = System.getProperty("service.profile.active")
+	val activeProfile = System.getProperty("spring.profiles.active")
 //////	val activeProfile = System.getenv("")
 ////	println("current active profile : ${activeProfile} ")
-//
 //
 	println("Current active profile: $activeProfile")
 	if(activeProfile !="prod") {
@@ -74,12 +71,12 @@ jib {
 		}
 	}
 }
+
+
 tasks.named<org.springframework.boot.gradle.tasks.run.BootRun>("bootRun") {
 
-	var activeProfile = System.getProperty("service.profile.active")
-	if(activeProfile ==null){
-		activeProfile = "dev"
-	}
-	systemProperty ("spring.profiles.active", activeProfile)
+	val activeProfile = System.getProperty("spring.profiles.active")
+	println(activeProfile)
+	systemProperty("spring.profiles.active", activeProfile)
 //	systemProperty("spring.profiles.active", System.getProperty("spring.profiles.active") ?: "default")
 }
