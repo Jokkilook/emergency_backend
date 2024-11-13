@@ -10,6 +10,7 @@ import daelim.emergency_backend.exception.HospitalNotFoundException
 import daelim.emergency_backend.lib.ApiPaths
 import daelim.emergency_backend.lib.SortType
 import daelim.emergency_backend.models.Response
+import daelim.emergency_backend.models.hospital.EmergencyHospitalDTO
 import daelim.emergency_backend.models.hospital.HospitalInformationDTO
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -32,21 +33,24 @@ class EmergencyController(val emergencyService: EmergencyService) {
     fun getEmergencyHospitals(
         @RequestParam(defaultValue = "0") page: Int,
         @RequestParam(defaultValue = "20") size: Int,
-        @RequestParam(defaultValue = "0") sortType: Int  // Add sortType parameter
-    ): ResponseEntity<Response<Page<EmergencyHospitalData>>?> {
+        @RequestParam(defaultValue = "NAMEASC") sortType: SortType,  // SortType으로 변경
+        @RequestParam(defaultValue = "") filter: List<String>?  // 필터 추가
+    ): ResponseEntity<Response<Page<EmergencyHospitalDTO>>?> {
         return try {
+            // 응급 병원 데이터를 가져오는 서비스 메소드 호출
             val response = Response(
                 HttpStatus.OK.value(),
                 "success",
-                emergencyService.getAllEmergencyHospitalData(page, size, sortType)  // Pass sortType to the service method
+                emergencyService.getAllEmergencyHospitalData(page, size, sortType, filter)  // SortType과 filter를 전달
             )
             ResponseEntity.ok(response)
         } catch (e: EmergencyException) {
             logger.error(e.message ?: "Failed error")
-            val response = Response<Page<EmergencyHospitalData>>(e.errorCode.code, e.message, null)
+            val response = Response<Page<EmergencyHospitalDTO>>(e.errorCode.code, e.message, null)
             ResponseEntity(response, null, HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
+
 
 
     @Operation(summary = "시군구 검색으로 병원 정보 리스트 반환", description = "시군구 단계별로 병원 정보를 검색하여 리스트를 반환합니다.")
@@ -108,10 +112,11 @@ class EmergencyController(val emergencyService: EmergencyService) {
         @RequestParam hpid: String,
         @RequestParam(required = false, defaultValue = "true") includeHospitalInfo: Boolean,
         @RequestParam(required = false, defaultValue = "true") includeEmergencyData: Boolean,
-        @RequestParam(defaultValue = "0") sort: Int,
+        @RequestParam(defaultValue = "NAMEASC") sort: SortType,  // SortType으로 변경
         @RequestParam(required = false) filter: List<String>?
     ): ResponseEntity<Response<Map<String, Any?>>?> {
         return try {
+            // 응급실 및 병원 정보 조회 서비스 메소드 호출
             val result = emergencyService.findHospitalAndEmergencyDataByHpid(
                 hpid,
                 includeHospitalInfo,
@@ -120,10 +125,12 @@ class EmergencyController(val emergencyService: EmergencyService) {
                 filter
             )
 
+            // 데이터가 없을 경우 예외 처리
             if (result["hospitalInfo"] == null && result["emergencyInfo"] == null) {
                 throw DataNotFoundException("해당 hpid로 데이터를 찾을 수 없습니다.")
             }
 
+            // 정상적으로 데이터가 반환되면 ResponseEntity로 감싸서 반환
             val response = Response(
                 HttpStatus.OK.value(),
                 "success",
@@ -132,6 +139,7 @@ class EmergencyController(val emergencyService: EmergencyService) {
             ResponseEntity.ok(response)
         } catch (e: EmergencyException) {
             logger.error(e.message ?: "Failed error")
+            // 예외 발생 시 ResponseEntity 반환
             val response = Response<Map<String, Any?>>(
                 e.errorCode.code,
                 e.message,
@@ -140,5 +148,6 @@ class EmergencyController(val emergencyService: EmergencyService) {
             ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
+
 
 }
