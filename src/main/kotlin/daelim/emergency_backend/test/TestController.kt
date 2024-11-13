@@ -1,9 +1,9 @@
 package daelim.emergency_backend.test
 
-import daelim.emergency_backend.Infra.Entity.HospitalInformation
-import daelim.emergency_backend.Service.EmergencyService
+import daelim.emergency_backend.infra.entity.HospitalInformation
 import daelim.emergency_backend.models.datagokr.AvailableBedInfoResult
 import daelim.emergency_backend.models.Response
+import daelim.emergency_backend.service.EmergencyService
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
