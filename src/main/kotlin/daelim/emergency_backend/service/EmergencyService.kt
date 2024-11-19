@@ -10,6 +10,7 @@ import daelim.emergency_backend.exception.EmergencyDataNotFoundException
 import daelim.emergency_backend.exception.HospitalNotFoundException
 import daelim.emergency_backend.exception.InvalidParameterException
 import daelim.emergency_backend.lib.SortType
+import daelim.emergency_backend.models.hospital.EmergencyHospitalDTO
 import daelim.emergency_backend.models.hospital.HospitalInformationDTO
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
@@ -38,27 +39,57 @@ class EmergencyService(
         }
     }
 
-    fun getAllEmergencyHospitalData(page: Int, size: Int, sortType: Int): Page<EmergencyHospitalData> {
+    fun getAllEmergencyHospitalData(
+        page: Int,
+        size: Int,
+        sortType: SortType,
+        filter: List<String>?):
+            Page<EmergencyHospitalDTO> {
+
         val pageable = PageRequest.of(page, size)
         val hospitals = emergencyRepository.findAll(pageable).content
 
+        // DTO로 변환
+        val hospitalDTOs = hospitals.map { EmergencyHospitalDTO(it) }
+
+        // 필터 조건이 있을 경우 필터링
+        val filteredHospitals = if (!filter.isNullOrEmpty()) {
+            hospitalDTOs.filter { hospital ->
+                filter.any { hospital.dutyName?.contains(it, ignoreCase = true) == true }
+            }
+        } else {
+            hospitalDTOs
+        }
+
         // 정렬 처리
-        val sortedHospitals: List<EmergencyHospitalData> = when (sortType) {
-            // 병원 이름 순
-            0 -> hospitals.sortedBy { it.dutyName }
-            // 거리 순 (거리 관련 정보를 제거한 후 이름 순 정렬)
-            1 -> hospitals.sortedBy { it.dutyName }
-            // 수술실 가용 병상 순 (기능 추가 필요)
-            2 -> throw InvalidParameterException("Sort type 2 is not implemented.")
-            // 당직의 (기능 추가 필요)
-            3 -> throw InvalidParameterException("Sort type 3 is not implemented.")
-            // 구급차 (기능 추가 필요)
-            4 -> throw InvalidParameterException("Sort type 4 is not implemented.")
+        val sortedHospitals: List<EmergencyHospitalDTO> = when (sortType) {
+            // 병원 이름 오름차순
+            SortType.NAMEASC -> filteredHospitals.sortedBy { it.dutyName }
+            // 병원 이름 내림차순
+            SortType.NAMEDESC -> filteredHospitals.sortedByDescending { it.dutyName }
+            // 거리 오름차순 (거리 관련 정보를 제공하지 않음, 예외 처리)
+            SortType.DISTANCEASC -> throw InvalidParameterException("This api has no DISTANCEASC option.")
+            // 거리 내림차순 (거리 관련 정보를 제공하지 않음, 예외 처리)
+            SortType.DISTANCEDESC -> throw InvalidParameterException("This api has no DISTANCEDESC option.")
+            // 수술실 가용 오름차순 (수술실 관련 정보 제공하지 않음, 예외 처리)
+            SortType.OPERROOMASC -> throw InvalidParameterException("This api has no OPERROOMASC option.")
+            // 수술실 가용 내림차순 (수술실 관련 정보 제공하지 않음, 예외 처리)
+            SortType.OPERROOMDESC -> throw InvalidParameterException("This api has no OPERROOMDESC option.")
+            // 당직의 이름 오름차순 (당직의 정보 제공하지 않음, 예외 처리)
+            SortType.DOCNAMEASC -> throw InvalidParameterException("This api has no DOCNAMEASC option.")
+            // 당직의 이름 내림차순 (당직의 정보 제공하지 않음, 예외 처리)
+            SortType.DOCNAMEDESC -> throw InvalidParameterException("This api has no DOCNAMEDESC option.")
+            // 구급차 가용 여부 (구급차 관련 정보 제공하지 않음, 예외 처리)
+            SortType.AMBULANCE -> throw InvalidParameterException("This api has no AMBULANCE option.")
+            // 정의되지 않은 정렬 항목에 대해 예외 처리
             else -> throw InvalidParameterException("Invalid sort type.")
         }
-        // 정렬된 병원 데이터를 페이지로 반환
+
+        // 정렬된 데이터를 페이지로 반환
         return PageImpl(sortedHospitals, pageable, sortedHospitals.size.toLong())
     }
+
+
 
     fun searchWithCity(
         stage1: String,
@@ -180,7 +211,7 @@ class EmergencyService(
         hpid: String,
         includeHospitalInfo: Boolean = true,
         includeEmergencyData: Boolean = true,
-        sort: Int = 0,
+        sort: SortType = SortType.NAMEASC, // sort 매개변수를 SortType으로 변경
         filter: List<String>? = null
     ): Map<String, Any?> {
         val result = mutableMapOf<String, Any?>()
@@ -193,19 +224,23 @@ class EmergencyService(
 
         // 응급실 정보 조회
         if (includeEmergencyData) {
-            val emergencyDataPage = getAllEmergencyHospitalData(0, 20, sort)
+            // 응급실 데이터 페이지 가져오기
+            val emergencyDataPage = getAllEmergencyHospitalData(0, 20, sort, filter)
             var emergencyDataList = emergencyDataPage.content
 
+            // 필터 조건이 있을 경우 필터링 처리
             if (!filter.isNullOrEmpty()) {
                 emergencyDataList = emergencyDataList.filter { hospital ->
                     filter.any { hospital.dutyName?.contains(it) == true }
                 }
             }
+
             result["emergencyInfo"] = emergencyDataList
         }
 
         return result
     }
+
 
 
 }
