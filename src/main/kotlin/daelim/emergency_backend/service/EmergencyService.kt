@@ -72,9 +72,15 @@ class EmergencyService(
             // 거리 내림차순 (거리 관련 정보를 제공하지 않음, 예외 처리)
             SortType.DISTANCEDESC -> throw InvalidParameterException("This api has no DISTANCEDESC option.")
             // 수술실 가용 오름차순 (수술실 관련 정보 제공하지 않음, 예외 처리)
-            SortType.OPERROOMASC -> throw InvalidParameterException("This api has no OPERROOMASC option.")
+            SortType.OPERROOMASC -> filteredHospitals.sortedWith(
+                compareBy<EmergencyHospitalDTO> { it.hvoc }             // 첫 번째 기준: 수술실 가용 오름차순
+                    .thenBy { it.dutyName }                             // 두 번째 기준: 이름 오름차순
+            )
             // 수술실 가용 내림차순 (수술실 관련 정보 제공하지 않음, 예외 처리)
-            SortType.OPERROOMDESC -> throw InvalidParameterException("This api has no OPERROOMDESC option.")
+            SortType.OPERROOMDESC -> filteredHospitals.sortedWith(
+                compareByDescending<EmergencyHospitalDTO> { it.hvoc }   // 첫 번째 기준: 수술실 가용 오름차순
+                    .thenBy { it.dutyName }                             // 두 번째 기준: 이름 오름차순
+            )
             // 당직의 이름 오름차순 (당직의 정보 제공하지 않음, 예외 처리)
             SortType.DOCNAMEASC -> throw InvalidParameterException("This api has no DOCNAMEASC option.")
             // 당직의 이름 내림차순 (당직의 정보 제공하지 않음, 예외 처리)
@@ -212,15 +218,26 @@ class EmergencyService(
         val sortedHospitals = when (sortType) {
             SortType.NAMEASC -> filteredHospitals.sortedBy { it.dutyName } // 이름 오름차순
             SortType.NAMEDESC -> filteredHospitals.sortedByDescending { it.dutyName } // 이름 내림차순
-            SortType.DISTANCEASC -> filteredHospitals.sortedBy { it.distance } // 거리 오름차순
-
-            SortType.DISTANCEDESC -> filteredHospitals.sortedByDescending { it.distance } //거리순 내림차순
+            //거리순 오름차순
+            SortType.DISTANCEASC -> filteredHospitals.sortedWith(
+                compareBy<HospitalInformationDTO> { it.distance } // 첫 번째 기준: 거리 오름차순
+                    .thenBy { it.dutyName }                       // 두 번째 기준: 이름 오름차순
+            )
+            //거리순 내림차순
+            SortType.DISTANCEDESC -> filteredHospitals.sortedWith(
+                compareByDescending<HospitalInformationDTO> { it.distance } // 첫 번째 기준: 거리 내림차순
+                    .thenBy { it.dutyName }                                 // 두 번째 기준: 이름 오름차순
+            )
             //수술실 가용 병상 오름차순
-            SortType.OPERROOMASC -> filteredHospitals.sortedBy { it.hpopyn }
+            SortType.OPERROOMASC -> filteredHospitals.sortedWith(
+                compareBy<HospitalInformationDTO> { it.hpopyn }   // 첫 번째 기준: 가용 병상 오름차순
+                    .thenBy { it.dutyName }                       // 두 번째 기준: 이름 오름차순
+            )
             //수술실 가용 병상 내림차순
-            SortType.OPERROOMDESC -> filteredHospitals.sortedByDescending { it.hpopyn }
-//            3 -> hospitalDistances.sortedBy { it.hospital.dutyEryn } // 당직의 이름 db 수정 필요 or api 신규 생성필
-//            4 -> hospitalDistances.sortedByDescending { it.hospital.hvamyn } // 구급차 유무 없
+            SortType.OPERROOMDESC -> filteredHospitals.sortedWith(
+                compareByDescending<HospitalInformationDTO> { it.hpopyn }   // 첫 번째 기준: 가용 병상 내림차순
+                    .thenBy { it.dutyName }                                 // 두 번째 기준: 이름 오름차순
+            )
             //당직의 이름 오름차순
             SortType.DOCNAMEASC -> throw InvalidParameterException("This api has no DOCNAMEASC option.")
             //당직의 이름 내림차순
@@ -242,75 +259,43 @@ class EmergencyService(
         hpid: String,
         includeHospitalInfo: Boolean = true,
         includeEmergencyData: Boolean = true,
-        sort: SortType = SortType.NAMEASC,
-        filter: List<String>? = null
+        originLat:Double?,
+        originLon:Double?
     ): Map<String, Any?> {
         val result = mutableMapOf<String, Any?>()
 
         // 병원 정보 조회
         if (includeHospitalInfo) {
-            val hospitalInfoList = listOfNotNull(hospitalRepository.findByHpid(hpid))
+            val hospitalInfo = hospitalRepository.findByHpid(hpid)
+            lateinit var hospitalInfoDTO:HospitalInformationDTO
 
-            /*
-            if (!filter.isNullOrEmpty()) {
-                hospitalInfoList = hospitalInfoList.filter { hospital ->
-                    filter.any { hospital.name?.contains(it, ignoreCase = true) == true }
-                }
-            }*/
+            if(hospitalInfo==null) throw DataNotFoundException("HPID: ${hpid} 값을 가진 병원이 존재하지 않습니다.")
 
-            //정렬
-            val sortedHospitalInfo = when (hospitalSort) {
-                SortType.NAMEASC -> hospitalInfoList.sortedBy { it.name }
-                SortType.NAMEDESC -> hospitalInfoList.sortedByDescending { it.name }
-                //이민규 교수님께서 거리와 관련된 기능은 짜두신게 없어 예외로 두라고 셔셔서 예외로 남깁니다.
-                SortType.DISTANCEASC -> throw InvalidParameterException("This api has no Distance option.")
-                SortType.DISTANCEDESC -> throw InvalidParameterException("This api has no Distance option.")
-                //SortType.DISTANCEASC -> hospitalInfoList.sortedBy { it.distance }
-                //SortType.DISTANCEDESC -> hospitalInfoList.sortedByDescending { it.distance }
-
-                SortType.OPERROOMASC -> hospitalInfoList.sortedBy { it.hpopyn }
-                SortType.OPERROOMDESC -> hospitalInfoList.sortedByDescending { it.hpopyn }
-                SortType.DOCNAMEASC -> throw InvalidParameterException("This api has no Doctor name sorting option.")
-                SortType.DOCNAMEDESC -> throw InvalidParameterException("This api has no Doctor name sorting option.")
-                SortType.AMBULANCE -> throw InvalidParameterException("This api has no availability sorting option.")
-                else -> throw InvalidParameterException("This sort type is not supported.")
+            hospitalInfoDTO =
+            if(originLat!=null && originLon!=null){
+                val distance = getDistanceWithLonLat(originLat, originLon, hospitalInfo.wgs84Lat?:0.0, hospitalInfo.wgs84Lon?:0.0)
+                HospitalInformationDTO(hospitalInfo, distance)
+            }else if(originLat ==null &&originLon ==null){
+                HospitalInformationDTO(hospitalInfo, -1.0)
+            }else{
+                throw InvalidParameterException()
             }
-            result["hospitalInfo"] = sortedHospitalInfo
+
+            result["hospitalInfo"] = hospitalInfoDTO
         }
 
+        //응급실 정보
         if (includeEmergencyData) {
-            val emergencyDataPage = getAllEmergencyHospitalData(0, 20, sort, filter)
-            var emergencyDataList = emergencyDataPage.content
+            val emergencyHospitalData = emergencyRepository.findByHpid(hpid)
+            lateinit var emergencyHospitalDTO:EmergencyHospitalDTO
 
-            // 필터 조건이 있을 경우 필터링 처리
-            if (!filter.isNullOrEmpty()) {
-                emergencyDataList = emergencyDataList.filter { hospital ->
-                    filter.any { hospital.dutyName?.contains(it, ignoreCase = true) == true }
-                }
-            }
+            if(emergencyHospitalData==null) throw DataNotFoundException("HPID: ${hpid} 값을 가진 병원이 존재하지 않습니다.")
 
-            // 정렬
-            emergencyDataList = when (sort) {
-                SortType.NAMEASC -> emergencyDataList.sortedBy { it.dutyName }
-                SortType.NAMEDESC -> emergencyDataList.sortedByDescending { it.dutyName }
-                //위와 같은 이유 입니다.
-                SortType.DISTANCEASC -> throw InvalidParameterException("This api has no Distance option.")
-                SortType.DISTANCEDESC -> throw InvalidParameterException("This api has no Distance option.")
-                //SortType.DISTANCEASC -> emergencyDataList.sortedBy { it.distance }
-                //SortType.DISTANCEDESC -> emergencyDataList.sortedByDescending { it.distance }
+            emergencyHospitalDTO = EmergencyHospitalDTO(emergencyHospitalData)
 
-                SortType.OPERROOMASC -> emergencyDataList.sortedBy { it.hpopyn }
-                SortType.OPERROOMDESC -> emergencyDataList.sortedByDescending { it.hpopyn }
-                SortType.DOCNAMEASC -> throw InvalidParameterException("This api has no Doctor name sorting option.")
-                SortType.DOCNAMEDESC -> throw InvalidParameterException("This api has no Doctor name sorting option.")
-                SortType.AMBULANCE -> throw InvalidParameterException("This api has no availability sorting option.")
-                else -> throw InvalidParameterException("This sort type is not supported.")
-            }
-
-            result["emergencyInfo"] = emergencyDataList
+            result["emergencyInfo"] = emergencyHospitalDTO
         }
+
         return result
-    }
-    return result
     }
 }

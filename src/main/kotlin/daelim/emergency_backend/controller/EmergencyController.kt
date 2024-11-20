@@ -118,42 +118,16 @@ class EmergencyController(val emergencyService: EmergencyService) {
         @RequestParam hpid: String,
         @RequestParam(required = false, defaultValue = "true") includeHospitalInfo: Boolean,
         @RequestParam(required = false, defaultValue = "true") includeEmergencyData: Boolean,
-        @RequestParam(required = false, defaultValue = "NAMEASC") sort: SortType,  // SortType으로 변경
-        @RequestParam(required = false) filter: List<String>?
+        @RequestParam(required = false) originLat: Double?,
+        @RequestParam(required = false) originLon: Double?,
     ): ResponseEntity<Response<Map<String, Any?>>?> {
-        return try {
-            // 응급실 및 병원 정보 조회 서비스 메소드 호출
-            val result = emergencyService.findHospitalAndEmergencyDataByHpid(
-                hpid,
-                includeHospitalInfo,
-                includeEmergencyData,
-                sort,
-                filter
-            )
+        val data = emergencyService.findHospitalAndEmergencyDataByHpid(
+            hpid,
+            includeHospitalInfo,
+            includeEmergencyData,
+            originLat,originLon
+        )
 
-            // 데이터가 없을 경우 예외 처리
-            if (result["hospitalInfo"] == null && result["emergencyInfo"] == null) {
-                throw DataNotFoundException("해당 hpid로 데이터를 찾을 수 없습니다.")
-            }
-
-            // 정상적으로 데이터가 반환되면 ResponseEntity로 감싸서 반환
-            val response = Response(
-                HttpStatus.OK.value(),
-                "success",
-                result
-            )
-            ResponseEntity.ok(response)
-        } catch (e: EmergencyException) {
-            logger.error(e.message ?: "Failed error")
-            // 예외 발생 시 ResponseEntity 반환
-            val response = Response<Map<String, Any?>>(
-                e.errorCode.code,
-                e.message,
-                null
-            )
-            ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR)
-        }
+        return ResponseEntity(Response(HttpStatus.OK.value(),"success",data),null,HttpStatus.OK)
     }
-
-
 }
