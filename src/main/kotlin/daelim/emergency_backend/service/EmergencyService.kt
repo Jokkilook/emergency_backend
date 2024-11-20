@@ -231,12 +231,17 @@ class EmergencyService(
             val sortedHospitalInfo = when (hospitalSort) {
                 SortType.NAMEASC -> hospitalInfoList.sortedBy { it.name }
                 SortType.NAMEDESC -> hospitalInfoList.sortedByDescending { it.name }
+                //이민규 교수님께서 거리와 관련된 기능은 짜두신게 없어 예외로 두라고 셔셔서 예외로 남깁니다.
                 SortType.DISTANCEASC -> throw InvalidParameterException("This api has no Distance option.")
                 SortType.DISTANCEDESC -> throw InvalidParameterException("This api has no Distance option.")
-                SortType.OPERROOMASC -> throw InvalidParameterException("This api has no Operating room availability option.")
-                SortType.OPERROOMDESC -> throw InvalidParameterException("This api has no Operating room availability option.")
+                //SortType.DISTANCEASC -> hospitalInfoList.sortedBy { it.distance }
+                //SortType.DISTANCEDESC -> hospitalInfoList.sortedByDescending { it.distance }
+
+                SortType.OPERROOMASC -> hospitalInfoList.sortedBy { it.hpopyn }
+                SortType.OPERROOMDESC -> hospitalInfoList.sortedByDescending { it.hpopyn }
                 SortType.DOCNAMEASC -> throw InvalidParameterException("This api has no Doctor name sorting option.")
                 SortType.DOCNAMEDESC -> throw InvalidParameterException("This api has no Doctor name sorting option.")
+                SortType.AMBULANCE -> throw InvalidParameterException("This api has no availability sorting option.")
                 else -> throw InvalidParameterException("This sort type is not supported.")
             }
             result["hospitalInfo"] = sortedHospitalInfo
@@ -257,10 +262,14 @@ class EmergencyService(
             emergencyDataList = when (sort) {
                 SortType.NAMEASC -> emergencyDataList.sortedBy { it.dutyName }
                 SortType.NAMEDESC -> emergencyDataList.sortedByDescending { it.dutyName }
+                //위와 같은 이유 입니다.
                 SortType.DISTANCEASC -> throw InvalidParameterException("This api has no Distance option.")
                 SortType.DISTANCEDESC -> throw InvalidParameterException("This api has no Distance option.")
-                SortType.OPERROOMASC -> throw InvalidParameterException("This api has no Operating room availability option.")
-                SortType.OPERROOMDESC -> throw InvalidParameterException("This api has no Operating room availability option.")
+                //SortType.DISTANCEASC -> emergencyDataList.sortedBy { it.distance }
+                //SortType.DISTANCEDESC -> emergencyDataList.sortedByDescending { it.distance }
+
+                SortType.OPERROOMASC -> emergencyDataList.sortedBy { it.hpopyn }
+                SortType.OPERROOMDESC -> emergencyDataList.sortedByDescending { it.hpopyn }
                 SortType.DOCNAMEASC -> throw InvalidParameterException("This api has no Doctor name sorting option.")
                 SortType.DOCNAMEDESC -> throw InvalidParameterException("This api has no Doctor name sorting option.")
                 SortType.AMBULANCE -> throw InvalidParameterException("This api has no availability sorting option.")
