@@ -1,6 +1,3 @@
-import com.google.api.client.util.Value
-import org.gradle.initialization.Environment
-
 plugins {
 	kotlin("jvm") version "1.9.25"
 	kotlin("plugin.spring") version "1.9.25"
@@ -16,6 +13,7 @@ java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(17)
 	}
+
 }
 
 repositories {
@@ -44,6 +42,7 @@ dependencies {
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
+
 kotlin {
 	compilerOptions {
 		freeCompilerArgs.addAll("-Xjsr305=strict")
@@ -51,22 +50,33 @@ kotlin {
 }
 
 tasks.withType<Test> {
+	exclude("**/*")
 	useJUnitPlatform()
 }
 
 
 jib {
-	val activeProfile = System.getProperty("service.profile.active") ?: "prod"
+	val activeProfile = System.getProperty("spring.profiles.active")
+//////	val activeProfile = System.getenv("")
+////	println("current active profile : ${activeProfile} ")
+//
+	println("Current active profile: $activeProfile")
+//	if(activeProfile !="prod") {
+//		to {
+//			image = "docker-repo.minq.work/emergency-backend:latest"  // Docker 이미지 경로
+//			auth {
+//				username = System.getenv("REGISTRY_USER")  // 환경 변수에서 인증 정보 불러오기
+//				password = System.getenv("REGISTRY_PASSWORD")
+//			}
+//		}
+//	}
+}
 
 
-	println("current active profile : ${activeProfile} ")
-	if(activeProfile != "prod") {
-		to {
-			image = "docker-repo.minq.work/emergency-backend:latest"  // Docker 이미지 경로
-			auth {
-				username = System.getenv("REGISTRY_USER")  // 환경 변수에서 인증 정보 불러오기
-				password = System.getenv("REGISTRY_PASSWORD")
-			}
-		}
-	}
+tasks.named<org.springframework.boot.gradle.tasks.run.BootRun>("bootRun") {
+
+	val activeProfile = System.getProperty("spring.profiles.active")
+	println(activeProfile)
+	systemProperty("spring.profiles.active", activeProfile)
+//	systemProperty("spring.profiles.active", System.getProperty("spring.profiles.active") ?: "default")
 }
