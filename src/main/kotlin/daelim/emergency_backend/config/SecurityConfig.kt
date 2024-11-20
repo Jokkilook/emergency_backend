@@ -39,7 +39,7 @@ class SecurityConfig() {
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
         val config = CorsConfiguration()
-        config.allowedOrigins = listOf("https://prod-1066673057371.asia-northeast3.run.app") // frontend url
+        config.allowedOrigins = listOf("https://prod-1066673057371.asia-northeast3.run.app", "http://localhost:8080") // frontend url
         config.allowedMethods = listOf("GET")
 //        config.allowedHeaders = listOf("*")
         config.allowedHeaders = mutableListOf("Content-Type", "Authorization")
@@ -47,7 +47,8 @@ class SecurityConfig() {
         config.maxAge = 3600L
 
         val source = UrlBasedCorsConfigurationSource()
-        source.registerCorsConfiguration("v1/app/**", config)
+        source.registerCorsConfiguration("/v1/app/**", config)
+        source.registerCorsConfiguration("/swagger-ui/**", config);
         return source
     }
 }
