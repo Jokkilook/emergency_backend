@@ -20,6 +20,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 
 @Tag(name = "Emergency API", description = "응급실, 병원 정보 반환 API")
@@ -30,6 +31,7 @@ class EmergencyController(val emergencyService: EmergencyService) {
     //emergency hospital data List 반환
     @Operation(summary = "응급 병원 리스트 가져오기", description = "응급 병원 데이터를 페이징, 정렬, 필터링하여 반환합니다.")
     @GetMapping(ApiPaths.EMERGENCY_LIST)
+    @ResponseBody
     fun getEmergencyHospitals(
         @RequestParam(defaultValue = "0") page: Int,
         @RequestParam(defaultValue = "20") size: Int,
@@ -55,6 +57,7 @@ class EmergencyController(val emergencyService: EmergencyService) {
 
     @Operation(summary = "시군구 검색으로 병원 정보 리스트 반환", description = "시군구 단계별로 병원 정보를 검색하여 리스트를 반환합니다.")
     @GetMapping(ApiPaths.HOSPITAL_LIST_ADDRESS)
+    @ResponseBody
     fun getHospitalInfoByAddress(
         @RequestParam stage1:String,
         @RequestParam stage2:String,
@@ -71,6 +74,7 @@ class EmergencyController(val emergencyService: EmergencyService) {
     //hospital information List 반환
     @Operation(summary = "병원 정보 리스트 반환", description = "병원 데이터를 페이징하여 반환합니다.")
     @GetMapping(ApiPaths.HOSPITAL_LIST)
+    @ResponseBody
     fun getHospitalList(
         @RequestParam(defaultValue = "0") page: Int,
         @RequestParam(defaultValue = "20") size: Int,
@@ -109,6 +113,7 @@ class EmergencyController(val emergencyService: EmergencyService) {
 
     @Operation(summary = "병원 정보와 응급실 정보 반환", description = "hpid로 병원 정보와 응급실 정보를 선택적으로 반환합니다.")
     @GetMapping(ApiPaths.HOSPITAL)
+    @ResponseBody
     fun getEmergencyAndHospitalByHpid(
         @RequestParam hpid: String,
         @RequestParam(required = false, defaultValue = "true") includeHospitalInfo: Boolean,
