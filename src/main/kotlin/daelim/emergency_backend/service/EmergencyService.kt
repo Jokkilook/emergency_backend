@@ -242,36 +242,75 @@ class EmergencyService(
         hpid: String,
         includeHospitalInfo: Boolean = true,
         includeEmergencyData: Boolean = true,
-        sort: SortType = SortType.NAMEASC, // sort 매개변수를 SortType으로 변경
+        sort: SortType = SortType.NAMEASC,
         filter: List<String>? = null
     ): Map<String, Any?> {
         val result = mutableMapOf<String, Any?>()
 
         // 병원 정보 조회
         if (includeHospitalInfo) {
-            val hospitalInfo = hospitalRepository.findByHpid(hpid)
-            result["hospitalInfo"] = hospitalInfo
+            val hospitalInfoList = listOfNotNull(hospitalRepository.findByHpid(hpid))
+
+            /*
+            if (!filter.isNullOrEmpty()) {
+                hospitalInfoList = hospitalInfoList.filter { hospital ->
+                    filter.any { hospital.name?.contains(it, ignoreCase = true) == true }
+                }
+            }*/
+
+            //정렬
+            val sortedHospitalInfo = when (hospitalSort) {
+                SortType.NAMEASC -> hospitalInfoList.sortedBy { it.name }
+                SortType.NAMEDESC -> hospitalInfoList.sortedByDescending { it.name }
+                //이민규 교수님께서 거리와 관련된 기능은 짜두신게 없어 예외로 두라고 셔셔서 예외로 남깁니다.
+                SortType.DISTANCEASC -> throw InvalidParameterException("This api has no Distance option.")
+                SortType.DISTANCEDESC -> throw InvalidParameterException("This api has no Distance option.")
+                //SortType.DISTANCEASC -> hospitalInfoList.sortedBy { it.distance }
+                //SortType.DISTANCEDESC -> hospitalInfoList.sortedByDescending { it.distance }
+
+                SortType.OPERROOMASC -> hospitalInfoList.sortedBy { it.hpopyn }
+                SortType.OPERROOMDESC -> hospitalInfoList.sortedByDescending { it.hpopyn }
+                SortType.DOCNAMEASC -> throw InvalidParameterException("This api has no Doctor name sorting option.")
+                SortType.DOCNAMEDESC -> throw InvalidParameterException("This api has no Doctor name sorting option.")
+                SortType.AMBULANCE -> throw InvalidParameterException("This api has no availability sorting option.")
+                else -> throw InvalidParameterException("This sort type is not supported.")
+            }
+            result["hospitalInfo"] = sortedHospitalInfo
         }
 
-        // 응급실 정보 조회
         if (includeEmergencyData) {
-            // 응급실 데이터 페이지 가져오기
             val emergencyDataPage = getAllEmergencyHospitalData(0, 20, sort, filter)
             var emergencyDataList = emergencyDataPage.content
 
             // 필터 조건이 있을 경우 필터링 처리
             if (!filter.isNullOrEmpty()) {
                 emergencyDataList = emergencyDataList.filter { hospital ->
-                    filter.any { hospital.dutyName?.contains(it) == true }
+                    filter.any { hospital.dutyName?.contains(it, ignoreCase = true) == true }
                 }
+            }
+
+            // 정렬
+            emergencyDataList = when (sort) {
+                SortType.NAMEASC -> emergencyDataList.sortedBy { it.dutyName }
+                SortType.NAMEDESC -> emergencyDataList.sortedByDescending { it.dutyName }
+                //위와 같은 이유 입니다.
+                SortType.DISTANCEASC -> throw InvalidParameterException("This api has no Distance option.")
+                SortType.DISTANCEDESC -> throw InvalidParameterException("This api has no Distance option.")
+                //SortType.DISTANCEASC -> emergencyDataList.sortedBy { it.distance }
+                //SortType.DISTANCEDESC -> emergencyDataList.sortedByDescending { it.distance }
+
+                SortType.OPERROOMASC -> emergencyDataList.sortedBy { it.hpopyn }
+                SortType.OPERROOMDESC -> emergencyDataList.sortedByDescending { it.hpopyn }
+                SortType.DOCNAMEASC -> throw InvalidParameterException("This api has no Doctor name sorting option.")
+                SortType.DOCNAMEDESC -> throw InvalidParameterException("This api has no Doctor name sorting option.")
+                SortType.AMBULANCE -> throw InvalidParameterException("This api has no availability sorting option.")
+                else -> throw InvalidParameterException("This sort type is not supported.")
             }
 
             result["emergencyInfo"] = emergencyDataList
         }
-
         return result
     }
-
-
-
+    return result
+    }
 }
