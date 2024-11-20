@@ -20,8 +20,12 @@ spring:
 
   mvc:
     contentnegotiation:
+      favor-parameter: false
+      favor-path-extension: false
+      favor-header: true
       media-types:
         json: application/json
+    default-response-type: application/json
 
 
 server:
