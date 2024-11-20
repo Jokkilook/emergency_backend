@@ -14,6 +14,8 @@ spring:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
   config:
     import: optional:file:.env[.properties]
+    activate:
+      on-profile: prod
 
 
 
