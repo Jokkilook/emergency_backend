@@ -74,13 +74,14 @@ class EmergencyController(val emergencyService: EmergencyService) {
     fun getHospitalList(
         @RequestParam(defaultValue = "0") page: Int,
         @RequestParam(defaultValue = "20") size: Int,
-        @RequestParam(defaultValue = "0") sortType: Int,
+        @RequestParam(defaultValue = "0") sortType: SortType,
+        @RequestParam(required = false) filter: List<String>?,
         @RequestParam(required = false) originLat: Double?,
         @RequestParam(required = false) originLon: Double?,
-    ): ResponseEntity<Response<Page<HospitalInformationWithDistance>>?> {
-        var rootResult :Page<HospitalInformationWithDistance> =  Page.empty()
+    ): ResponseEntity<Response<Page<HospitalInformationDTO>>?> {
+        var rootResult :Page<HospitalInformationDTO> =  Page.empty()
         try{
-            val result = emergencyService.getHospitalInformationsByPage(page, size,sortType,originLat,originLon)
+            val result = emergencyService.getHospitalInformationsByPage(page, size,sortType,filter,originLat,originLon)
 
             rootResult = result
         }catch (

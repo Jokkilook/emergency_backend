@@ -174,34 +174,59 @@ class EmergencyService(
     fun getHospitalInformationsByPage(
         page: Int,
         size: Int,
-        sortType: Int,
+        sortType:SortType = SortType.NAMEASC,
+        filter:List<String>?,
         originLat: Double?,
         originLon: Double?
-    ): Page<HospitalInformationWithDistance> {
+    ): Page<HospitalInformationDTO> {
 
         val hospitals = hospitalRepository.findAll()
-        val hospitalDistances: MutableList<HospitalInformationWithDistance> = mutableListOf()
-        if(originLat !=null &&originLon !=null){
+        val hospitalDistances: MutableList<HospitalInformationDTO> = mutableListOf()
 
-             hospitals.forEach { hospital ->
-                val distance = getDistanceWithLonLat(originLat, originLon, hospital.wgs84Lat!! , hospital.wgs84Lon!!)
-                 hospitalDistances.add(HospitalInformationWithDistance(hospital.id,hospital, distance))
+
+        if(originLat!=null && originLon!=null){
+            hospitals.forEach{ hospital ->
+                val distance = getDistanceWithLonLat(originLat, originLon, hospital.wgs84Lat?:0.0, hospital.wgs84Lon?:0.0)
+                hospitalDistances.add(HospitalInformationDTO(hospital, distance))
             }
         }else if(originLat ==null &&originLon ==null){
-
             hospitals.forEach { hospital ->
-                hospitalDistances.add(HospitalInformationWithDistance(hospital.id,hospital, -1.0))
+                hospitalDistances.add(HospitalInformationDTO(hospital, -1.0))
             }
         }else{
             throw InvalidParameterException()
         }
 
+        var filteredHospitals = mutableListOf<HospitalInformationDTO>()
+
+        if(!filter.isNullOrEmpty()){
+            hospitalDistances.forEach { hospital ->
+                if(filter.any{ hospital.dgidIdName?.contains(it) == true }){
+                    filteredHospitals.add(hospital)
+                }
+            }
+        } else {
+            filteredHospitals = hospitalDistances
+        }
+
         val sortedHospitals = when (sortType) {
-            0 -> hospitalDistances.sortedBy { it.hospital.dutyName } // 이름순
-            1 -> hospitalDistances.sortedBy { it.distance } // 거리순
-//            2 -> hospitalDistances.sortedByDescending { it.hospital.hvoc } // 수술실 가용 병상/hvoc hpopyn 두개 있음 hv 응급 수술실일 가능성 hp일반 수술실일 가능성
+            SortType.NAMEASC -> filteredHospitals.sortedBy { it.dutyName } // 이름 오름차순
+            SortType.NAMEDESC -> filteredHospitals.sortedByDescending { it.dutyName } // 이름 내림차순
+            SortType.DISTANCEASC -> filteredHospitals.sortedBy { it.distance } // 거리 오름차순
+
+            SortType.DISTANCEDESC -> filteredHospitals.sortedByDescending { it.distance } //거리순 내림차순
+            //수술실 가용 병상 오름차순
+            SortType.OPERROOMASC -> filteredHospitals.sortedBy { it.hpopyn }
+            //수술실 가용 병상 내림차순
+            SortType.OPERROOMDESC -> filteredHospitals.sortedByDescending { it.hpopyn }
 //            3 -> hospitalDistances.sortedBy { it.hospital.dutyEryn } // 당직의 이름 db 수정 필요 or api 신규 생성필
 //            4 -> hospitalDistances.sortedByDescending { it.hospital.hvamyn } // 구급차 유무 없
+            //당직의 이름 오름차순
+            SortType.DOCNAMEASC -> throw InvalidParameterException("This api has no DOCNAMEASC option.")
+            //당직의 이름 내림차순
+            SortType.DOCNAMEDESC -> throw InvalidParameterException("This api has no DOCNAMEDESC option.")
+            //구급차
+            SortType.AMBULANCE -> throw InvalidParameterException("This api has no AMBULANCE option.")
             else -> throw InvalidParameterException()
         }
 
