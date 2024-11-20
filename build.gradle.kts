@@ -53,24 +53,6 @@ tasks.withType<Test> {
 	exclude("**/*")
 	useJUnitPlatform()
 }
-
-
-jib {
-	val activeProfile = System.getProperty("spring.profiles.active")
-//////	val activeProfile = System.getenv("")
-////	println("current active profile : ${activeProfile} ")
-//
-	println("Current active profile: $activeProfile")
-//	if(activeProfile !="prod") {
-//		to {
-//			image = "docker-repo.minq.work/emergency-backend:latest"  // Docker 이미지 경로
-//			auth {
-//				username = System.getenv("REGISTRY_USER")  // 환경 변수에서 인증 정보 불러오기
-//				password = System.getenv("REGISTRY_PASSWORD")
-//			}
-//		}
-//	}
-}
 val imageTargetEnv = if (properties.containsKey("projectDataImageTargetEnv")) {
 	property("projectDataImageTargetEnv")
 } else "local"
