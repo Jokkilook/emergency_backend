@@ -8,12 +8,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
 @Configuration
 class WebConfig:WebMvcConfigurer {
-    override fun configureMessageConverters(converters: MutableList<HttpMessageConverter<*>>) {
-        // JSON 메시지 컨버터 우선순위로 추가
-        converters.clear()
-        converters.add(MappingJackson2HttpMessageConverter())
-    }
-
     override fun configureContentNegotiation(configurer: ContentNegotiationConfigurer) {
         configurer.defaultContentType(org.springframework.http.MediaType.APPLICATION_JSON) // JSON을 기본 반환
     }
