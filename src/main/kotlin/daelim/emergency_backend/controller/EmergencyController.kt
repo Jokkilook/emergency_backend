@@ -35,8 +35,8 @@ class EmergencyController(val emergencyService: EmergencyService) {
     fun getEmergencyHospitals(
         @RequestParam(defaultValue = "0") page: Int,
         @RequestParam(defaultValue = "20") size: Int,
-        @RequestParam(defaultValue = "NAMEASC") sortType: SortType,  // SortType으로 변경
-        @RequestParam(defaultValue = "") filter: List<String>?  // 필터 추가
+        @RequestParam(required = false, defaultValue = "NAMEASC") sortType: SortType,  // SortType으로 변경
+        @RequestParam(required = false, defaultValue = "") filter: List<String>?  // 필터 추가
     ): ResponseEntity<Response<Page<EmergencyHospitalDTO>>?> {
         return try {
             // 응급 병원 데이터를 가져오는 서비스 메소드 호출
@@ -61,7 +61,7 @@ class EmergencyController(val emergencyService: EmergencyService) {
     fun getHospitalInfoByAddress(
         @RequestParam stage1:String,
         @RequestParam stage2:String,
-        @RequestParam(defaultValue = "NAMEASC") sortType: SortType,
+        @RequestParam(required = false, defaultValue = "NAMEASC") sortType: SortType,
         @RequestParam(required = false) filter: List<String>?,
         @RequestParam(required = false) originLat: Double?,
         @RequestParam(required = false) originLon: Double?,
@@ -78,7 +78,7 @@ class EmergencyController(val emergencyService: EmergencyService) {
     fun getHospitalList(
         @RequestParam(defaultValue = "0") page: Int,
         @RequestParam(defaultValue = "20") size: Int,
-        @RequestParam(defaultValue = "NAMEASC") sortType: SortType,
+        @RequestParam(required = false, defaultValue = "NAMEASC") sortType: SortType,
         @RequestParam(required = false) filter: List<String>?,
         @RequestParam(required = false) originLat: Double?,
         @RequestParam(required = false) originLon: Double?,
@@ -118,7 +118,7 @@ class EmergencyController(val emergencyService: EmergencyService) {
         @RequestParam hpid: String,
         @RequestParam(required = false, defaultValue = "true") includeHospitalInfo: Boolean,
         @RequestParam(required = false, defaultValue = "true") includeEmergencyData: Boolean,
-        @RequestParam(defaultValue = "NAMEASC") sort: SortType,  // SortType으로 변경
+        @RequestParam(required = false, defaultValue = "NAMEASC") sort: SortType,  // SortType으로 변경
         @RequestParam(required = false) filter: List<String>?
     ): ResponseEntity<Response<Map<String, Any?>>?> {
         return try {
