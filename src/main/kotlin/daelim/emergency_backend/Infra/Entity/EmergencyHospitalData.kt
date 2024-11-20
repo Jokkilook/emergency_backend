@@ -1,4 +1,4 @@
-package daelim.emergency_backend.database.emergencyHospital
+package daelim.emergency_backend.Infra.Entity
 
 import jakarta.persistence.*
 import java.sql.Timestamp

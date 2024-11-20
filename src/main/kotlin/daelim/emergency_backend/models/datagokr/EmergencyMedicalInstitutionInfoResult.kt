@@ -1,4 +1,4 @@
-package daelim.emergency_backend.models.EmergencyMedicalInstitutionInfo
+package daelim.emergency_backend.models.datagokr
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonRootName
@@ -8,15 +8,14 @@ import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import daelim.emergency_backend.models.AvailavleBedInfo.Header
 
 //응급의료기관 목록정보 조회
 @JsonRootName("response")
 data class EmergencyMedicalInstitutionInfoResult(
     @JsonProperty("header")
-    var haeder:Header?,
+    var haeder: Header?,
     @JsonProperty("body")
-    var body:EmergencyMedicalInstitutionInfoBody?
+    var body: EmergencyMedicalInstitutionInfoBody?
 )
 
 @JsonRootName("body")
