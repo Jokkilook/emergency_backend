@@ -61,15 +61,15 @@ jib {
 ////	println("current active profile : ${activeProfile} ")
 //
 	println("Current active profile: $activeProfile")
-	if(activeProfile !="prod") {
-		to {
-			image = "docker-repo.minq.work/emergency-backend:latest"  // Docker 이미지 경로
-			auth {
-				username = System.getenv("REGISTRY_USER")  // 환경 변수에서 인증 정보 불러오기
-				password = System.getenv("REGISTRY_PASSWORD")
-			}
-		}
-	}
+//	if(activeProfile !="prod") {
+//		to {
+//			image = "docker-repo.minq.work/emergency-backend:latest"  // Docker 이미지 경로
+//			auth {
+//				username = System.getenv("REGISTRY_USER")  // 환경 변수에서 인증 정보 불러오기
+//				password = System.getenv("REGISTRY_PASSWORD")
+//			}
+//		}
+//	}
 }
 
 
