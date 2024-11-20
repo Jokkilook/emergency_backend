@@ -35,7 +35,7 @@ dependencies {
 
 	implementation ("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0") //SpringDoc OpenAPI를 사용하는 Spring Boot 프로젝트에 OpenAPI 문서 생성을 위한 라이브러리
 
-	implementation("io.github.cdimascio:dotenv-kotlin:6.4.0")
+	implementation("me.paulschwarz:spring-dotenv:4.0.0")
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
@@ -53,23 +53,39 @@ tasks.withType<Test> {
 	exclude("**/*")
 	useJUnitPlatform()
 }
-
+val imageTargetEnv = if (properties.containsKey("projectDataImageTargetEnv")) {
+	property("projectDataImageTargetEnv")
+} else "local"
 
 jib {
-	val activeProfile = System.getProperty("spring.profiles.active")
-//////	val activeProfile = System.getenv("")
-////	println("current active profile : ${activeProfile} ")
-//
-	println("Current active profile: $activeProfile")
-//	if(activeProfile !="prod") {
-//		to {
-//			image = "docker-repo.minq.work/emergency-backend:latest"  // Docker 이미지 경로
-//			auth {
-//				username = System.getenv("REGISTRY_USER")  // 환경 변수에서 인증 정보 불러오기
-//				password = System.getenv("REGISTRY_PASSWORD")
-//			}
-//		}
-//	}
+	from {
+		image = "ghcr.io/graalvm/jdk:java17"
+		platforms {
+			platform {
+				architecture = "amd64"
+				os = "linux"
+			}
+			platform {
+				architecture = "arm64"
+				os = "linux"
+			}
+		}
+	}
+	to {
+		image = when (imageTargetEnv) {
+			"prod" -> "asia-east1-docker.pkg.dev/hospital-440202/hospital-main-api-server/prod:latest"
+			"dev" -> "docker-repo.minq.work/emergency-backend:latest"
+			else -> "local/potpicks"
+		}
+	}
+	container {
+		jvmFlags = when (imageTargetEnv) {
+			"prod" -> listOf("-XX:+UseContainerSupport", "-Dfile.encoding=UTF-8", "-Dspring.profiles.active=prod")
+			"dev" -> listOf("-XX:+UseContainerSupport", "-Dfile.encoding=UTF-8", "-Dspring.profiles.active=dev")
+			else -> listOf("-XX:+UseContainerSupport", "-Dfile.encoding=UTF-8", "-Dspring.profiles.active=local")
+		}
+		ports = listOf("8080", "80", "8088", "9090")
+	}
 }
 
 

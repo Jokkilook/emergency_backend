@@ -1,6 +1,9 @@
 spring:
-#  profiles :
-#    active : "prod"
+  config:
+    activate:
+      on-profile: prod
+
+
   application:
     name: emergency_backend
   datasource:
@@ -12,11 +15,6 @@ spring:
     hibernate:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-  config:
-    import: optional:file:.env[.properties]
-    activate:
-      on-profile: prod
-
 
 
 
