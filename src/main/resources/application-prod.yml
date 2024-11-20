@@ -16,14 +16,6 @@ spring:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
 
-  mvc:
-    contentnegotiation:
-      favor-parameter: false
-      favor-path-extension: false
-      favor-header: true
-      media-types:
-        json: application/json
-    default-response-type: application/json
 
 server:
   port: 8080
