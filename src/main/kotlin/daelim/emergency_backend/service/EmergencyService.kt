@@ -216,7 +216,7 @@ class EmergencyService(
     ): Map<String, Any?> {
         val result = mutableMapOf<String, Any?>()
 
-        // 병원 정보 포함 여부 확인
+        // 병원 정보 조회
         if (includeHospitalInfo) {
             val hospitalInfo = hospitalRepository.findByHpid(hpid)
             result["hospitalInfo"] = hospitalInfo
@@ -249,17 +249,8 @@ class EmergencyService(
 
             result["emergencyInfo"] = emergencyDataList
         }
-
         return result
     }
-
-
-
-
-
     return result
     }
-
-
-
 }
