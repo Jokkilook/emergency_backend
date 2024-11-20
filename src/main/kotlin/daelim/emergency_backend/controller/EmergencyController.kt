@@ -61,7 +61,7 @@ class EmergencyController(val emergencyService: EmergencyService) {
     fun getHospitalInfoByAddress(
         @RequestParam stage1:String,
         @RequestParam stage2:String,
-        @RequestParam(defaultValue = "0") sortType: SortType,
+        @RequestParam(defaultValue = "NAMEASC") sortType: SortType,
         @RequestParam(required = false) filter: List<String>?,
         @RequestParam(required = false) originLat: Double?,
         @RequestParam(required = false) originLon: Double?,
@@ -78,7 +78,7 @@ class EmergencyController(val emergencyService: EmergencyService) {
     fun getHospitalList(
         @RequestParam(defaultValue = "0") page: Int,
         @RequestParam(defaultValue = "20") size: Int,
-        @RequestParam(defaultValue = "0") sortType: SortType,
+        @RequestParam(defaultValue = "NAMEASC") sortType: SortType,
         @RequestParam(required = false) filter: List<String>?,
         @RequestParam(required = false) originLat: Double?,
         @RequestParam(required = false) originLon: Double?,
