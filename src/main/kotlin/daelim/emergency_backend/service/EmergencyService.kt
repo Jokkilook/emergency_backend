@@ -218,8 +218,20 @@ class EmergencyService(
 
         // 병원 정보 조회
         if (includeHospitalInfo) {
-            val hospitalInfo = hospitalRepository.findByHpid(hpid)
-            result["hospitalInfo"] = hospitalInfo
+            val hospitalInfoList = hospitalRepository.findAllBySomeCriteria() // 다중 병원 정보 조회
+            val sortedHospitalInfo = when (hospitalSort) {
+                SortType.NAMEASC -> hospitalInfoList.sortedBy { it.name }
+                SortType.NAMEDESC -> hospitalInfoList.sortedByDescending { it.name }
+                SortType.DISTANCEASC -> throw InvalidParameterException("This api has no Distance option.")
+                SortType.DISTANCEDESC -> throw InvalidParameterException("This api has no Distance option.")
+                SortType.OPERROOMASC -> throw InvalidParameterException("This api has no Operating room availability option.")
+                SortType.OPERROOMDESC -> throw InvalidParameterException("This api has no Operating room availability option.")
+                SortType.DOCNAMEASC -> throw InvalidParameterException("This api has no Doctor name sorting option.")
+                SortType.DOCNAMEDESC -> throw InvalidParameterException("This api has no Doctor name sorting option.")
+                SortType.AMBULANCE -> throw InvalidParameterException("This api has no availability sorting option.")
+                else -> throw InvalidParameterException("This sort type is not supported.")
+            }
+            result["hospitalInfo"] = sortedHospitalInfo
         }
 
         if (includeEmergencyData) {
