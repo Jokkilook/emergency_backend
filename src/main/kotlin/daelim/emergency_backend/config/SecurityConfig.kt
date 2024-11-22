@@ -24,9 +24,12 @@ class SecurityConfig() {
             .cors { it.configurationSource(corsConfigurationSource()) } // CORS 관련 설정
             .authorizeHttpRequests {
                 it
-                
-                     .requestMatchers("/v1/app/**","/swagger-ui/**")//여기에 여러개 넣음
-                     .anonymous()
+
+//                    .requestMatchers("/v1/app/**", "/swagger-ui/**").permitAll()  // 모든 사용자 접근 허용
+//                    .anyRequest().authenticated()  // 다른 경로는 인증 필요
+
+//                     .requestMatchers("/v1/app/**","/swagger-ui/**")//여기에 여러개 넣음
+//                     .anonymous()
  //                    .requestMatchers("/api/member/**").hasRole("MEMBER")
                      .anyRequest().permitAll()
             }
@@ -40,27 +43,29 @@ class SecurityConfig() {
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
         val config = CorsConfiguration()
-        config.allowedOrigins = listOf(outboundUrl, "http://localhost:8080") // frontend url
+        config.allowedOriginPatterns = listOf(outboundUrl + "**", "http://localhost:8080/**")
+//        config.allowedOrigins = listOf(outboundUrl, "http://localhost:8080") // frontend url
         config.allowedMethods = listOf("GET")
 //        config.allowedHeaders = listOf("*")
-        // config.allowedHeaders = mutableListOf("Content-Type", "Authorization")
+//        config.allowedHeaders = mutableListOf("Content-Type", "Authorization")
 
-    // 허용할 헤더 설정
-    config.allowedHeaders = listOf(
-        "Origin",
-        "Content-Type",
-        "Accept",
-        "Authorization"
-    )
-    
-    // 노출할 응답 헤더 설정
-    config.exposedHeaders = listOf(
-        "Access-Control-Allow-Origin",
-        "Access-Control-Allow-Methods",
-        "Access-Control-Allow-Headers",
-        "Access-Control-Allow-Credentials",
-        "Content-Type"
-    )
+
+        // 허용할 헤더 설정
+        config.allowedHeaders = listOf(
+            "Origin",
+            "Content-Type",
+            "Accept",
+            "Authorization"
+        )
+
+        // 노출할 응답 헤더 설정
+        config.exposedHeaders = listOf(
+            "Access-Control-Allow-Origin",
+            "Access-Control-Allow-Methods",
+            "Access-Control-Allow-Headers",
+            "Access-Control-Allow-Credentials",
+            "Content-Type"
+        )
         config.allowCredentials = true
         config.maxAge = 3600L
 
