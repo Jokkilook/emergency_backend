@@ -24,10 +24,14 @@ class SecurityConfig() {
             .cors { it.configurationSource(corsConfigurationSource()) } // CORS 관련 설정
             .authorizeHttpRequests {
                 it
-                    .requestMatchers("/v1/app/**")//여기에 여러개 넣음
-                    .anonymous()
-//                    .requestMatchers("/api/member/**").hasRole("MEMBER")
-                    .anyRequest().permitAll()
+                
+                    .requestMatchers("/v1/app/**", "/swagger-ui/**").permitAll()  // 모든 사용자 접근 허용
+                    .anyRequest().authenticated()  // 다른 경로는 인증 필요
+                    
+//                     .requestMatchers("/v1/app/**","/swagger-ui/**")//여기에 여러개 넣음
+//                     .anonymous()
+// //                    .requestMatchers("/api/member/**").hasRole("MEMBER")
+//                     .anyRequest().permitAll()
             }
             .build()
     }
