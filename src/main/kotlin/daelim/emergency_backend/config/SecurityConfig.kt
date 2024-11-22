@@ -43,7 +43,24 @@ class SecurityConfig() {
         config.allowedOrigins = listOf(outboundUrl, "http://localhost:8080") // frontend url
         config.allowedMethods = listOf("GET")
 //        config.allowedHeaders = listOf("*")
-        config.allowedHeaders = mutableListOf("Content-Type", "Authorization")
+        // config.allowedHeaders = mutableListOf("Content-Type", "Authorization")
+                config.allowedHeaders = listOf(
+            "Origin",
+            "Content-Type",
+            "Accept",
+            "Authorization",
+            "Access-Control-Allow-Origin",
+            "Access-Control-Request-Method",
+            "Access-Control-Request-Headers",
+            "Access-Control-Allow-Credentials"
+        )
+
+        // 노출할 헤더 설정 추가
+        config.exposedHeaders = listOf(
+            "Content-Type",
+            "Access-Control-Allow-Origin",
+            "Access-Control-Allow-Credentials"
+        )
         config.allowCredentials = true
         config.maxAge = 3600L
 
