@@ -43,10 +43,10 @@ class SecurityConfig() {
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
         val config = CorsConfiguration()
-        config.addAllowedOriginPattern("https://prod-1066673057371.asia-northeast3.run.app/**")
-        config.addAllowedOriginPattern("http://prod-1066673057371.asia-northeast3.run.app/**")
-        config.addAllowedOriginPattern("http://localhost:8080/**")
-//        config.allowedOriginPatterns = listOf(, "http://prod-1066673057371.asia-northeast3.run.app/**" , )
+        config.addAllowedOriginPattern("https://prod-1066673057371.asia-northeast3.run.app")
+        config.addAllowedOriginPattern("http://prod-1066673057371.asia-northeast3.run.app")
+        config.addAllowedOriginPattern("http://localhost:8080")
+//        config.allowedOriginPatterns = listOf(, "http://prod-1066673057371.asia-northeast3.run.app" , )
 //        config.allowedOrigins = listOf(outboundUrl, "http://localhost:8080") // frontend url
         config.allowedMethods = listOf("GET")
 //        config.allowedHeaders = listOf("*")
@@ -73,8 +73,7 @@ class SecurityConfig() {
         config.maxAge = 3600L
 
         val source = UrlBasedCorsConfigurationSource()
-        source.registerCorsConfiguration("/v1/app/**", config)
-        source.registerCorsConfiguration("/swagger-ui/**", config);
+        source.registerCorsConfiguration("/**", config)
         return source
     }
 }
