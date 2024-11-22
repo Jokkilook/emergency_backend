@@ -44,23 +44,23 @@ class SecurityConfig() {
         config.allowedMethods = listOf("GET")
 //        config.allowedHeaders = listOf("*")
         // config.allowedHeaders = mutableListOf("Content-Type", "Authorization")
-                config.allowedHeaders = listOf(
-            "Origin",
-            "Content-Type",
-            "Accept",
-            "Authorization",
-            "Access-Control-Allow-Origin",
-            "Access-Control-Request-Method",
-            "Access-Control-Request-Headers",
-            "Access-Control-Allow-Credentials"
-        )
 
-        // 노출할 헤더 설정 추가
-        config.exposedHeaders = listOf(
-            "Content-Type",
-            "Access-Control-Allow-Origin",
-            "Access-Control-Allow-Credentials"
-        )
+    // 허용할 헤더 설정
+    config.allowedHeaders = listOf(
+        "Origin",
+        "Content-Type",
+        "Accept",
+        "Authorization"
+    )
+    
+    // 노출할 응답 헤더 설정
+    config.exposedHeaders = listOf(
+        "Access-Control-Allow-Origin",
+        "Access-Control-Allow-Methods",
+        "Access-Control-Allow-Headers",
+        "Access-Control-Allow-Credentials",
+        "Content-Type"
+    )
         config.allowCredentials = true
         config.maxAge = 3600L
 
