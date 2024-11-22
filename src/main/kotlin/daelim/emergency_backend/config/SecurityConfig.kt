@@ -43,7 +43,10 @@ class SecurityConfig() {
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
         val config = CorsConfiguration()
-        config.allowedOriginPatterns = listOf("https://prod-1066673057371.asia-northeast3.run.app/**", "http://prod-1066673057371.asia-northeast3.run.app/**" , "http://localhost:8080/**")
+        config.addAllowedOriginPattern("https://prod-1066673057371.asia-northeast3.run.app/**")
+        config.addAllowedOriginPattern("http://prod-1066673057371.asia-northeast3.run.app/**")
+        config.addAllowedOriginPattern("http://localhost:8080/**")
+//        config.allowedOriginPatterns = listOf(, "http://prod-1066673057371.asia-northeast3.run.app/**" , )
 //        config.allowedOrigins = listOf(outboundUrl, "http://localhost:8080") // frontend url
         config.allowedMethods = listOf("GET")
 //        config.allowedHeaders = listOf("*")
